@@ -17,7 +17,6 @@ public class Terrain {
     private List<Tree> myTrees;
     private List<Road> myRoads;
     private float[] mySunlight;
-    private int temp;
 
     /**
      * Create a new terrain
@@ -142,8 +141,8 @@ public class Terrain {
     /**
      * Add a road.
      *
-     * @param x
-     * @param z
+     * @param width
+     * @param spine
      */
     public void addRoad(double width, double[] spine) {
         Road road = new Road(width, spine);
@@ -168,9 +167,6 @@ public class Terrain {
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glCullFace(GL2.GL_BACK);
         // Move the map so that it is not in the same position as the camera
-//        gl.glTranslated(-2, 0, 2);
-//        gl.glRotated(temp,0,1,0);
-//        temp += 0.4;
 
         for (int z = 0; z < this.size().height - 1; z++) {
             for (int x = 0; x < this.size().width - 1; x++) {
@@ -220,22 +216,6 @@ public class Terrain {
             gl.glPopAttrib();
             gl.glPopMatrix();
         }
-    }
-
-    public double[] calcFaceNormals(double[] v1, double[] v2, double[] v3) {
-
-        double[] faceNorm = {0, 0, 0};
-
-        // Calculate vectors for two sides of the triangles
-        double[] u = {v2[0] - v1[0], v2[1] - v1[1], v2[2] - v1[2]};
-        double[] v = {v3[0] - v1[0], v3[1] - v1[1], v3[2] - v1[2]};
-
-        // Calculate the cross product to find the face normal of the triangle
-        faceNorm[0] = u[1] * v[2] - v[1] * u[2];
-        faceNorm[1] = u[2] * v[0] - v[2] * u[0];
-        faceNorm[2] = u[0] * v[1] - v[0] * u[1];
-
-        return faceNorm;
     }
 
     public static double[] getNormal(double[] p0, double[] p1, double[] p2) {

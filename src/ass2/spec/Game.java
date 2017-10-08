@@ -73,12 +73,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener{
         
         GLUT glut = new GLUT();
         GLU glu = new GLU();
-//        glu.gluLookAt(0,-1,0,2.5,0,-2.5,0,1,0);
         gl.glTranslated(0, -2, -8);
-//        num += 0.8;
         gl.glRotated(num,0,1,0);
 
-//        glut.glutSolidTeapot(1);
         myTerrain.draw(gl);
 
     }
@@ -108,12 +105,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener{
     public void reshape(GLAutoDrawable drawable, int x, int y, int width,
                         int height) {
 //        // TODO Auto-generated method stub
-//        GL2 gl = drawable.getGL().getGL2();
-//        gl.glMatrixMode(GL2.GL_PROJECTION);
-//        gl.glLoadIdentity();
-//
-//        //You can use an orthographic camera
-//        gl.glOrtho(-2, 2, -2, 2, 0, 20);
 
         GL2 gl = drawable.getGL().getGL2();
         gl.glMatrixMode(GL2.GL_PROJECTION);
