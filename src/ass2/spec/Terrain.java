@@ -3,7 +3,9 @@ package ass2.spec;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import com.jogamp.opengl.*;
+
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
 
 /**
  * COMMENT: Comment HeightMap
