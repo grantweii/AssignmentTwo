@@ -121,8 +121,56 @@ public class Terrain {
      * @return
      */
     public double altitude(double x, double z) {
+        // Check that the point is within the terrain grid
+        // - 1 since a terrain of width 5 will have coordinates only in the range 0..4
+        if (x > this.size().width - 1  || x < 0) return 0;
+        if (z > this.size().height - 1 || z < 0) return 0;
+
+        // If both x and z are integers then we can just use the getGridAltitude method
+        // since the point lies directly on a grid point
+        // This avoids having denominators that are 0 later on
+        if ((x == Math.floor(x)) && !Double.isInfinite(x) && (z == Math.floor(z)) && !Double.isInfinite(z)) {
+            System.out.println(getGridAltitude((int) x, (int) z));
+            return getGridAltitude((int) x, (int) z);
+        }
+
+        // Find the four points which are the corners of the grid the point is within
+        int x1 = (int) Math.floor(x);
+        int x2 = (int) Math.ceil(x);
+        int z1 = (int) Math.floor(z);
+        int z2 = (int) Math.ceil(z);
+
+        int[] q11 = {x1,z1};
+        int[] q12 = {x1,z2};
+        int[] q21 = {x2,z1};
+        int[] q22 = {x2,z2};
+
         double altitude = 0;
 
+        // Check if the point lies on a grid line
+        // If so then use linear interpolation
+        // This avoids having denominators that are 0 later on
+        if ((x == Math.floor(x)) && !Double.isInfinite(x)) {
+            altitude = (z2-z)/(z2-z1)*getGridAltitude(q11[0],q11[1])+(z-z1)/(z2-z1)*getGridAltitude(q12[0],q12[1]);
+            System.out.println(altitude);
+            return altitude;
+        }
+        if ((z == Math.floor(z)) && !Double.isInfinite(z)) {
+            altitude = (x2-x)/(x2-x1)*getGridAltitude(q11[0],q11[1])+(x-x1)/(x2-x1)*getGridAltitude(q21[0],q21[1]);
+            System.out.println(altitude);
+            return altitude;
+        }
+
+        // Otherwise the point is within the grid
+        // Use bilinear interpolation to find the altitude
+
+        // We first do linear interpolation in the x direction
+        double f1 = (x2-x)/(x2-x1)*getGridAltitude(q11[0],q11[1])+(x-x1)/(x2-x1)*getGridAltitude(q21[0],q21[1]);
+        double f2 = (x2-x)/(x2-x1)*getGridAltitude(q12[0],q12[1])+(x-x1)/(x2-x1)*getGridAltitude(q22[0],q22[1]);
+
+        // We then do linear interpolation in the z direction
+        altitude = (z2-z)/(z2-z1)*f1+(z-z1)/(z2-z1)*f2;
+        System.out.println(altitude);
 
         return altitude;
     }

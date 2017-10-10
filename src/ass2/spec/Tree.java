@@ -18,6 +18,7 @@ public class Tree {
 
     private static double TREE_HEIGHT = 1;
     private static double WIDTH_MULTIPLIER = 0.1;
+    private static double TRUNK_INTERPOLATION_CORRECTION = 0.2;
     private static double NUM_SLICES = 32;
     private static boolean FACE_NORMALS = true;
     private static boolean CYLINDER = true;
@@ -110,7 +111,7 @@ public class Tree {
         GLU glu = new GLU();
 
         {
-            //Set trunk material
+            // Set trunk material
             float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
             float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
             float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
@@ -119,8 +120,8 @@ public class Tree {
             gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
             gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 
-            //First make the cylinder (trunk) of the tree
-            gl.glTranslated(myPos[0], myPos[1], myPos[2]);
+            // First make the cylinder (trunk) of the tree
+            gl.glTranslated(myPos[0], myPos[1]-TRUNK_INTERPOLATION_CORRECTION, myPos[2]);
             gl.glRotated(-90.0, 1, 0, 0);
 
             GLUquadric gluQuadratic = glu.gluNewQuadric();
