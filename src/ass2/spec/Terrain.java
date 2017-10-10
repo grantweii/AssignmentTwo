@@ -2,6 +2,7 @@ package ass2.spec;
 
 import java.awt.Dimension;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.jogamp.opengl.GL;
@@ -157,9 +158,9 @@ public class Terrain {
         gl.glPushAttrib(GL2.GL_LIGHTING);
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
-        float[] ambient = {0.6f, 0.6f, 0.6f, 1.0f};
-        float[] diffuse = {0.3f, 0.3f, 0.3f, 1.0f};
-        float[] specular = {0.2f, 0.2f, 0.2f, 1.0f};
+        float[] ambient = {0.2f, 0.25f, 0.2f, 1.0f};
+        float[] diffuse = {0.2f, 0.6f, 0.3f, 1.0f};
+        float[] specular = {0.0f, 0.0f, 0.0f, 1.0f};
 
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
@@ -168,7 +169,6 @@ public class Terrain {
         // Turn on back face culling
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glCullFace(GL2.GL_BACK);
-        // Move the map so that it is not in the same position as the camera
 
         for (int z = 0; z < this.size().height - 1; z++) {
             for (int x = 0; x < this.size().width - 1; x++) {
@@ -186,12 +186,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormL, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
-                    gl.glVertex3d(v1[0]-2,v1[1],v1[2]+2);
-                    gl.glVertex3d(v2[0]-2,v2[1],v2[2]+2);
-                    gl.glVertex3d(v3[0]-2,v3[1],v3[2]+2);
+                    gl.glVertex3dv(v1, 0);
+                    gl.glVertex3dv(v2, 0);
+                    gl.glVertex3dv(v3, 0);
                 }
                 gl.glEnd();
-                gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
                 // Points of Right Triangle
                 double[] v4 = {x + 1, getGridAltitude(x + 1, z), z};
@@ -206,18 +205,26 @@ public class Terrain {
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
-                    gl.glVertex3d(v4[0]-2,v4[1],v4[2]+2);
-                    gl.glVertex3d(v5[0]-2,v5[1],v5[2]+2);
-                    gl.glVertex3d(v6[0]-2,v6[1],v6[2]+2);
+                    gl.glVertex3dv(v4, 0);
+                    gl.glVertex3dv(v5, 0);
+                    gl.glVertex3dv(v6, 0);
 
                 }
                 gl.glEnd();
-                gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
             }
 
-            gl.glPopAttrib();
-            gl.glPopMatrix();
+            Iterator treeIt = this.trees().iterator();
+            while (treeIt.hasNext()) {
+                Tree currTree = (Tree) treeIt.next();
+                currTree.draw2(gl);
+            }
+
+
         }
+
+        gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        gl.glPopAttrib();
+        gl.glPopMatrix();
     }
 
     public static double[] getNormal(double[] p0, double[] p1, double[] p2) {

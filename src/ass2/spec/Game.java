@@ -10,6 +10,7 @@ import javax.swing.JFrame;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.gl2.GLUT;
+import java.util.Iterator;
 
 /**
  * COMMENT: Comment Game
@@ -30,11 +31,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 	private double near = 0.1;
 	private double far = 1000;
 	private double aspectRatio = 4/3;
-	public double cameraRotation = 60;
-	public double rotateCamera = 2;
-	public double speed = 0.2;
-	public double cameraX = -2;
-	public double cameraZ = -8;
+	public static double cameraRotation = 60;
+	public static double rotateCamera = 2;
+	public static double speed = 0.2;
+	public static double cameraX = -2;
+	public static double cameraZ = -8;
 	    
     public Game(Terrain terrain) {
         super("Assignment 2");
@@ -82,7 +83,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     public void display(GLAutoDrawable drawable) {
         // TODO Auto-generated method stub
         GL2 gl = drawable.getGL().getGL2();
-        
+
+        gl.glMatrixMode(GL2.GL_MODELVIEW);
+        gl.glLoadIdentity();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
 
         setView(gl);
@@ -96,7 +99,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 		
 		glu.gluLookAt(cameraX, 1, cameraZ, 
 			cameraX + Math.cos(Math.toRadians(cameraRotation)), 
-			1, cameraZ + Math.sin(Math.toRadians(cameraRotation)), 
+			1, cameraZ + Math.sin(Math.toRadians(cameraRotation)),
 			0, 1, 0);
 	}
 
