@@ -145,35 +145,40 @@ public class Terrain {
         int[] q21 = {x2,z1};
         int[] q22 = {x2,z2};
 
+        double diagonal = (x1 + z2) - z;
         double altitude = 0;
 
         // Check if the point lies on a grid line
         // If so then use linear interpolation
         // This avoids having denominators that are 0 later on
         if ((x == Math.floor(x)) && !Double.isInfinite(x)) {
-            altitude = (z2-z)/(z2-z1)*getGridAltitude(q11[0],q11[1])+(z-z1)/(z2-z1)*getGridAltitude(q12[0],q12[1]);
-            System.out.println(altitude);
-            return altitude;
+            altitude = calcBilinInterpZDir(z, z1, z2, (int) x, (int) x);
+        } else if ((z == Math.floor(z)) && !Double.isInfinite(z)) {
+            altitude = calcBilinInterpXDir(x, x1, x2, (int) z, (int) z);
+        } else if (x < diagonal) { //Point exists in left triangle, interpolate using it
+            altitude = calcBilinInterp(x, x1, x1, x2, z, z2, z1, z1, diagonal);
+        } else { //x > diagonal, point exists in right triangle, interpolate using it
+            altitude = calcBilinInterp(x, x2, x2, x1, z, z1, z2, z2, diagonal);
         }
-        if ((z == Math.floor(z)) && !Double.isInfinite(z)) {
-            altitude = (x2-x)/(x2-x1)*getGridAltitude(q11[0],q11[1])+(x-x1)/(x2-x1)*getGridAltitude(q21[0],q21[1]);
-            System.out.println(altitude);
-            return altitude;
-        }
-
-        // Otherwise the point is within the grid
-        // Use bilinear interpolation to find the altitude
-
-        // We first do linear interpolation in the x direction
-        double f1 = (x2-x)/(x2-x1)*getGridAltitude(q11[0],q11[1])+(x-x1)/(x2-x1)*getGridAltitude(q21[0],q21[1]);
-        double f2 = (x2-x)/(x2-x1)*getGridAltitude(q12[0],q12[1])+(x-x1)/(x2-x1)*getGridAltitude(q22[0],q22[1]);
-
-        // We then do linear interpolation in the z direction
-        altitude = (z2-z)/(z2-z1)*f1+(z-z1)/(z2-z1)*f2;
-        System.out.println(altitude);
 
         return altitude;
     }
+
+    // Used when x is given as an integer
+    private double calcBilinInterpZDir(double z, int z1, int z2, int x1, int x2) {
+        return (z2-z)/(z2-z1)*getGridAltitude(x1,z1)+(z-z1)/(z2-z1)*getGridAltitude(x2,z2);
+    }
+
+    // Used when z is given as an integer
+    private double calcBilinInterpXDir(double x, int x1, int x2, int z1, int z2) {
+        return (x2-x)/(x2-x1)*getGridAltitude(x1,z1)+(x-x1)/(x2-x1)*getGridAltitude(x2,z2);
+    }
+
+    private double calcBilinInterp(double x, int x1, int x2, int x3, double z, int z1, int z2, int z3, double diagonal) {
+        return ((x-x1)/(diagonal-x1)*calcBilinInterpZDir(z, z1, z3, x1, x3) +
+                (diagonal - x)/(diagonal - x1)* calcBilinInterpZDir(z,z1,z2,x1,x2));
+    }
+
 
     /**
      * Add a tree at the specified (x,z) point.
