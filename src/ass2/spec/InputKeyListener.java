@@ -4,14 +4,10 @@ import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.newt.event.KeyListener;
 
 public class InputKeyListener implements KeyListener {
-
-	//THIS CLASS IS NOT YET INTEGRATED
 	
 	@Override
 	public void keyPressed(KeyEvent e) {
-		
-		System.out.println("pressed");
-		
+				
 		switch (e.getKeyCode()) {
 
     	//UP, DOWN is camera translation
