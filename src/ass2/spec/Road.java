@@ -1,7 +1,11 @@
 package ass2.spec;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import com.jogamp.opengl.GL2;
 
 /**
  * COMMENT: Comment Road 
@@ -12,7 +16,11 @@ public class Road {
 
     private List<Double> myPoints;
     private double myWidth;
-    
+    private double altitude;
+
+    private static int NUM_ROAD_SEGMENTS = 70;
+    private static double ALTITUDE_OFFSET = 0.01;
+
     /** 
      * Create a new road starting at the specified point
      */
@@ -29,12 +37,13 @@ public class Road {
      * @param width
      * @param spine
      */
-    public Road(double width, double[] spine) {
+    public Road(double width, double[] spine, double altitude) {
         myWidth = width;
         myPoints = new ArrayList<Double>();
         for (int i = 0; i < spine.length; i++) {
             myPoints.add(spine[i]);
         }
+        this.altitude = altitude;
     }
 
     /**
@@ -117,7 +126,11 @@ public class Road {
         
         return p;
     }
-    
+
+    public double getAltitude() {
+        return altitude;
+    }
+
     /**
      * Calculate the Bezier coefficients
      * 
@@ -144,6 +157,70 @@ public class Road {
         
         // this should never happen
         throw new IllegalArgumentException("" + i);
+    }
+
+    public void draw(GL2 gl) {
+        gl.glPushMatrix();
+        gl.glPushAttrib(GL2.GL_LIGHTING);
+
+        double height = getAltitude() + ALTITUDE_OFFSET;
+        double step = (myPoints.size() / 6.0) / NUM_ROAD_SEGMENTS;
+        double roadDistance = (myPoints.size() / 6.0) - (1.0/3.0) - (2 * step);
+
+        float[] ambient = {1f, 1f, 1f, 1.0f};
+        float[] diffuse = {1f, 1f, 1f, 1.0f};
+        float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
+
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
+
+        for (double t = 0.0; t + step < roadDistance; t+=step) {
+            System.out.println(t);
+            System.out.println("step: " + step);
+            System.out.println(size());
+
+            double[] currP = point(t);
+            double[] currV = {currP[0], height, currP[1]};
+            double[] nextP = point(t + step);
+            double[] nextV = {nextP[0], height, nextP[1]};
+
+            double[] currNextVector = {currP[0]-nextP[0], height, currP[1]-nextP[1]};
+            double[] currNextNormal = unitVector(-currNextVector[1], height, currNextVector[0]);
+
+            // Find the four points of the quad for the segment of the road
+            double[] currL = {currV[0]-(width()/2)*currNextNormal[0],currV[1]-(width()/2)*currNextNormal[1],currV[2]-(width()/2)*currNextNormal[2]};
+            double[] currR = {currV[0]+(width()/2)*currNextNormal[0],currV[1]+(width()/2)*currNextNormal[1],currV[2]+(width()/2)*currNextNormal[2]};
+            double[] nextL = {nextV[0]-(width()/2)*currNextNormal[0],nextV[1]-(width()/2)*currNextNormal[1],nextV[2]-(width()/2)*currNextNormal[2]};
+            double[] nextR = {nextV[0]+(width()/2)*currNextNormal[0],nextV[1]+(width()/2)*currNextNormal[1],nextV[2]+(width()/2)*currNextNormal[2]};
+
+            gl.glBegin(GL2.GL_TRIANGLES);
+            {
+                gl.glNormal3d(0,1,0);
+                gl.glVertex3dv(currL,0);
+                gl.glVertex3dv(nextL,0);
+                gl.glVertex3dv(nextR,0);
+                gl.glNormal3d(0,1,0);
+                gl.glVertex3dv(currR,0);
+                gl.glVertex3dv(currL,0);
+                gl.glVertex3dv(nextR,0);
+            }
+            gl.glEnd();
+            gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+        }
+
+        gl.glPopAttrib();
+        gl.glPopMatrix();
+    }
+
+    private double[] unitVector(double x, double y, double z) {
+        double amplitudeReciprocal = 1/(Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+ Math.pow(z,2)));
+        double unitX = x*amplitudeReciprocal;
+        double unitY = y*amplitudeReciprocal;
+        double unitZ = z*amplitudeReciprocal;
+
+        double [] unitVector = {unitX, unitY, unitZ};
+        return unitVector;
     }
 
 

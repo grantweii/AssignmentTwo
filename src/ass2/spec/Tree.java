@@ -12,15 +12,12 @@ import com.jogamp.opengl.glu.GLUquadric;
  */
 public class Tree {
 
-    private boolean faceNormals = true;
-    private static int angle = 0;
     private double[] myPos;
 
     private static double TREE_HEIGHT = 1;
     private static double WIDTH_MULTIPLIER = 0.1;
     private static double TRUNK_INTERPOLATION_CORRECTION = 0.2;
     private static double NUM_SLICES = 32;
-    private static boolean FACE_NORMALS = true;
     private static boolean CYLINDER = true;
 
     public Tree(double x, double y, double z) {

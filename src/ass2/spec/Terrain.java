@@ -140,13 +140,8 @@ public class Terrain {
         int z1 = (int) Math.floor(z);
         int z2 = (int) Math.ceil(z);
 
-        int[] q11 = {x1,z1};
-        int[] q12 = {x1,z2};
-        int[] q21 = {x2,z1};
-        int[] q22 = {x2,z2};
-
         double diagonal = (x1 + z2) - z;
-        double altitude = 0;
+        double altitude;
 
         // Check if the point lies on a grid line
         // If so then use linear interpolation
@@ -176,7 +171,7 @@ public class Terrain {
 
     private double calcBilinInterp(double x, int x1, int x2, int x3, double z, int z1, int z2, int z3, double diagonal) {
         return ((x-x1)/(diagonal-x1)*calcBilinInterpZDir(z, z1, z3, x1, x3) +
-                (diagonal - x)/(diagonal - x1)* calcBilinInterpZDir(z,z1,z2,x1,x2));
+                (diagonal - x)/(diagonal - x1)* calcBilinInterpZDir(z, z1, z2, x1, x2));
     }
 
 
@@ -201,7 +196,7 @@ public class Terrain {
      * @param spine
      */
     public void addRoad(double width, double[] spine) {
-        Road road = new Road(width, spine);
+        Road road = new Road(width, spine, altitude(spine[0],spine[1]));
         myRoads.add(road);
     }
 
@@ -266,13 +261,18 @@ public class Terrain {
                 gl.glEnd();
             }
 
-            Iterator treeIt = this.trees().iterator();
-            while (treeIt.hasNext()) {
-                Tree currTree = (Tree) treeIt.next();
-                currTree.draw2(gl);
-            }
+        }
 
+        Iterator treeIt = this.trees().iterator();
+        while (treeIt.hasNext()) {
+            Tree currTree = (Tree) treeIt.next();
+            currTree.draw2(gl);
+        }
 
+        Iterator roadIt = this.roads().iterator();
+        while (roadIt.hasNext()) {
+           Road currRoad = (Road) roadIt.next();
+           currRoad.draw(gl);
         }
 
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
