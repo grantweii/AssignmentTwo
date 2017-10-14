@@ -226,7 +226,7 @@ public class Terrain {
                 double[] v2 = {x, getGridAltitude(x, z + 1), z + 1};
                 double[] v3 = {x + 1, getGridAltitude(x + 1, z), z};
 
-                double[] faceNormL = getNormal(v1, v2, v3);
+                double[] faceNormL = MathUtil.getNormal(v1, v2, v3);
 
                 // Draw Left Triangle
 //                gl.glColor3f(1, 1, 1);
@@ -245,7 +245,7 @@ public class Terrain {
                 double[] v5 = {x, getGridAltitude(x, z + 1), z + 1};
                 double[] v6 = {x + 1, getGridAltitude(x + 1, z + 1), z + 1};
 
-                double[] faceNormR = getNormal(v4, v5, v6);
+                double[] faceNormR = MathUtil.getNormal(v4, v5, v6);
 
                 // Draw Right Triangle
 //                gl.glColor3f(1, 1, 1);
@@ -278,23 +278,6 @@ public class Terrain {
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
         gl.glPopAttrib();
         gl.glPopMatrix();
-    }
-
-    public static double[] getNormal(double[] p0, double[] p1, double[] p2) {
-        double u[] = {p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]};
-        double v[] = {p2[0] - p0[0], p2[1] - p0[1], p2[2] - p0[2]};
-
-        return crossProduct(u, v);
-    }
-
-    public static double[] crossProduct(double u[], double v[]) {
-        double crossProduct[] = new double[3];
-        crossProduct[0] = u[1] * v[2] - u[2] * v[1];
-        crossProduct[1] = u[2] * v[0] - u[0] * v[2];
-        crossProduct[2] = u[0] * v[1] - u[1] * v[0];
-
-        return crossProduct;
-
     }
 
 }

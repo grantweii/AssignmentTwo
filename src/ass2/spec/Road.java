@@ -18,7 +18,7 @@ public class Road {
     private double myWidth;
     private double altitude;
 
-    private static int NUM_ROAD_SEGMENTS = 70;
+    private static int NUM_ROAD_SEGMENTS = 100;
     private static double ALTITUDE_OFFSET = 0.01;
 
     /** 
@@ -176,23 +176,32 @@ public class Road {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 
         for (double t = 0.0; t + step < roadDistance; t+=step) {
-            System.out.println(t);
-            System.out.println("step: " + step);
-            System.out.println(size());
 
             double[] currP = point(t);
             double[] currV = {currP[0], height, currP[1]};
             double[] nextP = point(t + step);
             double[] nextV = {nextP[0], height, nextP[1]};
+            double[] lastP = point(t+step*2);
+            double[] lastV = {lastP[0], height, lastP[1]};
 
             double[] currNextVector = {currP[0]-nextP[0], height, currP[1]-nextP[1]};
-            double[] currNextNormal = unitVector(-currNextVector[1], height, currNextVector[0]);
+            double[] upVector = {0,1,0};
+            double[] perpVectorCN = MathUtil.getUnitVector(MathUtil.crossProduct(currNextVector, upVector));
+            perpVectorCN[0] = perpVectorCN[0]*(width()/2);
+            perpVectorCN[1] = perpVectorCN[1]*(width()/2);
+            perpVectorCN[2] = perpVectorCN[2]*(width()/2);
+
+            double[] nextLastVector = {nextP[0]-lastP[0], height, nextP[1]-lastP[1]};
+            double[] perpVectorNL = MathUtil.getUnitVector(MathUtil.crossProduct(nextLastVector, upVector));
+            perpVectorNL[0] = perpVectorNL[0]*(width()/2);
+            perpVectorNL[1] = perpVectorNL[1]*(width()/2);
+            perpVectorNL[2] = perpVectorNL[2]*(width()/2);
 
             // Find the four points of the quad for the segment of the road
-            double[] currL = {currV[0]-(width()/2)*currNextNormal[0],currV[1]-(width()/2)*currNextNormal[1],currV[2]-(width()/2)*currNextNormal[2]};
-            double[] currR = {currV[0]+(width()/2)*currNextNormal[0],currV[1]+(width()/2)*currNextNormal[1],currV[2]+(width()/2)*currNextNormal[2]};
-            double[] nextL = {nextV[0]-(width()/2)*currNextNormal[0],nextV[1]-(width()/2)*currNextNormal[1],nextV[2]-(width()/2)*currNextNormal[2]};
-            double[] nextR = {nextV[0]+(width()/2)*currNextNormal[0],nextV[1]+(width()/2)*currNextNormal[1],nextV[2]+(width()/2)*currNextNormal[2]};
+            double[] currL = {currV[0]-perpVectorCN[0],currV[1]-perpVectorCN[1],currV[2]-perpVectorCN[2]};
+            double[] currR = {currV[0]+perpVectorCN[0],currV[1]+perpVectorCN[1],currV[2]+perpVectorCN[2]};
+            double[] nextL = {nextV[0]-perpVectorNL[0],nextV[1]-perpVectorNL[1],nextV[2]-perpVectorNL[2]};
+            double[] nextR = {nextV[0]+perpVectorNL[0],nextV[1]+perpVectorNL[1],nextV[2]+perpVectorNL[2]};
 
             gl.glBegin(GL2.GL_TRIANGLES);
             {
