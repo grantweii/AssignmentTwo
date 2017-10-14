@@ -11,14 +11,48 @@ import com.jogamp.opengl.util.gl2.GLUT;
 public class Avatar {
 	
 	private boolean thirdPerson;
-	private double x = -2;
-	private double z = 5;
+	private Terrain terrain;
+	private double x = 1;
+	private double y = 0;
+	private double z = 4;
 	private double myRotation = 300;
 	private double rotationStep = 2;
-	private double speed = 0.2;
+	private double speed = 0.1;
 	
-	public Avatar() {
+	public Avatar(Terrain terrain) {
+		this.terrain = terrain;
 		this.thirdPerson = false;
+	}
+	
+	public void draw(GL2 gl) {
+		GLUT glut = new GLUT();
+				
+		gl.glPushMatrix();			
+		gl.glPushAttrib(GL2.GL_LIGHTING);
+	
+			//materials
+			float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
+	        float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
+	        float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
+	        
+	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
+	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
+	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
+	        
+			gl.glTranslated(x, y, z);
+			gl.glRotated(-myRotation, 0, 1, 0);
+			glut.glutSolidSphere(0.1, 64, 64);
+//			gl.glFrontFace(GL2.GL_CW);
+//		    glut.glutSolidTeapot(0.1);
+//		    gl.glFrontFace(GL2.GL_CCW);			
+		    
+		gl.glPopAttrib();
+		gl.glPopMatrix();
+		
+		System.out.println(x);
+		System.out.println(z);
+		System.out.println(myRotation);
+
 	}
 	
 	public void moveForward() {
@@ -46,39 +80,12 @@ public class Avatar {
     	if (myRotation < 0) myRotation = 360;
 	}
 	
-	public void draw(GL2 gl) {
-		GLUT glut = new GLUT();
-				
-		gl.glPushMatrix();			
-		gl.glPushAttrib(GL2.GL_LIGHTING);
-	
-			//materials
-			float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
-	        float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
-	        float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
-	        
-	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
-	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
-	        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
-	        
-			gl.glTranslated(x, 1, z);
-			gl.glRotated(-myRotation, 0, 1, 0);
-			glut.glutSolidSphere(0.1, 64, 64);
-//			gl.glFrontFace(GL2.GL_CW);
-//		    glut.glutSolidTeapot(0.1);
-//		    gl.glFrontFace(GL2.GL_CCW);			
-		    
-		gl.glPopAttrib();
-		gl.glPopMatrix();
-		
-		System.out.println(x);
-		System.out.println(z);
-		System.out.println(myRotation);
-
-	}
-	
 	public double getX() {
 		return this.x;
+	}
+	
+	public double getY() {
+		return this.y;
 	}
 	
 	public double getZ() {
@@ -105,6 +112,10 @@ public class Avatar {
 		x = newX;
 	}
 	
+	public void setY(double newY) {
+		y = newY;
+	}
+	
 	public void setZ(double newZ) {
 		z = newZ;
 	}
@@ -119,6 +130,10 @@ public class Avatar {
 		} else {
 			thirdPerson = false;
 		}
+	}
+
+	public void update() {
+		y = terrain.altitude(x, z);
 	}
 	
 

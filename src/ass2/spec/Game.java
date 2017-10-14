@@ -20,31 +20,16 @@ import java.util.Iterator;
  */
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
-    private Terrain myTerrain;
-    private double dx;
-    private double dz;
-    private GLU glu;
-    private GLUT glut;
-    
-    public Avatar avatar;
     public Game game;
-    
+    private Terrain myTerrain;
+    public Avatar avatar;
     private Camera camera;
-    private double fieldOfView = 120;
-	private double near = 0.1;
-	private double far = 1000;
-	private double aspectRatio = 4/3;
-	public static double cameraRotation = 60;
-	public static double rotateCamera = 4;
-	public static double speed = 0.2;
-	public static double cameraX = -2;
-	public static double cameraZ = 6;
 	    
     public Game(Terrain terrain) {
         super("Assignment 2");
         myTerrain = terrain;
         game = this;
- 		avatar = new Avatar();
+ 		avatar = new Avatar(myTerrain);
  		camera = new Camera(avatar);
     }
 
@@ -98,20 +83,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         
         camera.setView(gl);
  		avatar.draw(gl);
-        //setView(gl);
+        avatar.update();
         myTerrain.draw(gl);
     }
-    
-    public void setView(GL2 gl) {
-		gl.glMatrixMode(GL2.GL_MODELVIEW);  
-		gl.glLoadIdentity();
-		gl.glPushMatrix();
-			glu.gluLookAt(cameraX, 1, cameraZ, 
-				cameraX + Math.cos(Math.toRadians(cameraRotation)), 
-				1, cameraZ + Math.sin(Math.toRadians(cameraRotation)),
-				0, 1, 0);
-		gl.glPopMatrix();
-	}
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
@@ -136,11 +110,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
  		gl.glLoadIdentity();
  		
  		camera.initCamera(gl);
-// 		//initialise camera perspective
-// 		glu = new GLU();
-// 		glut = new GLUT();
-// 		glu.gluPerspective(120, aspectRatio, near, far);
- 		
     }
 
     @Override
@@ -156,42 +125,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
         glu.gluPerspective(60.0, (float)width/(float)height, 1.0, 20.0);
     }
-
-//    @Override
-//    public void keyPressed(KeyEvent e) {
-//        // TODO Auto-generated method stub
-//        switch (e.getKeyCode()) {
-//
-//        	//UP, DOWN is camera translation
-//            case KeyEvent.VK_UP: {
-//                double x = Math.cos(Math.toRadians(cameraRotation)) * speed + cameraX;
-//                double z = Math.sin(Math.toRadians(cameraRotation)) * speed + cameraZ;
-//                cameraX = x;
-//                cameraZ = z;
-//                break;
-//            }
-//            case KeyEvent.VK_DOWN: {
-//            	double x = cameraX - Math.cos(Math.toRadians(cameraRotation)) * speed;
-//                double z = cameraZ - Math.sin(Math.toRadians(cameraRotation)) * speed;
-//                cameraX = x;
-//                cameraZ = z;
-//            	break;
-//            }
-//            //LEFT RIGHT is camera rotation
-//            case KeyEvent.VK_LEFT: {
-//            	cameraRotation = cameraRotation - rotateCamera;
-//            	if (cameraRotation < 0) cameraRotation = 360;
-//                break;
-//            }
-//            case KeyEvent.VK_RIGHT: {
-//            	cameraRotation = cameraRotation + rotateCamera;
-//            	if (cameraRotation > 360) cameraRotation = 0;
-//            	break;
-//            }
-//            default:
-//                break;
-//        }
-//    }
     
     @Override
     public void keyPressed(KeyEvent e) {
