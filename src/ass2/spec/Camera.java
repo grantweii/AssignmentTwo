@@ -9,7 +9,7 @@ public class Camera {
 	private GLU glu;
 		
 	private double fieldOfView = 60;
-	private double near = 0;
+	private double near = 0.01;
 	private double far = 1000;
 	private double aspectRatio = 4/3;
 	
@@ -37,6 +37,9 @@ public class Camera {
 		if (avatar.getThirdPerson()) {
 			xOffset = 3 * Math.cos(Math.toRadians(avatarRotation));
 			zOffset = 3 * Math.sin(Math.toRadians(avatarRotation));
+		} else {
+			xOffset = 1.5 * Math.cos(Math.toRadians(avatarRotation));
+			zOffset = 1.5 * Math.sin(Math.toRadians(avatarRotation));
 		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);  
 		gl.glLoadIdentity();

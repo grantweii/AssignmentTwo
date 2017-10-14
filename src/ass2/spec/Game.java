@@ -82,7 +82,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         
         camera.setView(gl);
- 		avatar.draw(gl);
+        if (avatar.getThirdPerson()) {
+        	avatar.draw(gl);
+        }
         avatar.update();
         myTerrain.draw(gl);
     }
