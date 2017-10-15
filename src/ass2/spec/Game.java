@@ -4,14 +4,21 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
-import com.jogamp.opengl.*;
-import com.jogamp.opengl.awt.GLJPanel;
+import java.nio.FloatBuffer;
+import java.util.ArrayList;
+
 import javax.swing.JFrame;
-import com.jogamp.opengl.util.FPSAnimator;
+
+import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
+import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.GLCapabilities;
+import com.jogamp.opengl.GLEventListener;
+import com.jogamp.opengl.GLProfile;
+import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.glu.GLUquadric;
-import com.jogamp.opengl.util.gl2.GLUT;
-import java.util.Iterator;
+import com.jogamp.opengl.util.FPSAnimator;
 
 /**
  * COMMENT: Comment Game
@@ -20,9 +27,11 @@ import java.util.Iterator;
  */
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
-    public Game game;
+    private Game game;
     private Terrain myTerrain;
-    public Avatar avatar;
+    private Avatar avatar;
+    //private ArrayList<Enemy> enemies;
+    private Enemy enemy;
     private Camera camera;
 	    
     public Game(Terrain terrain) {
@@ -31,6 +40,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         game = this;
  		avatar = new Avatar(myTerrain);
  		camera = new Camera(avatar);
+    	//this.enemies = new ArrayList<Enemy>();
+ 		//initEnemies(terrain);
+ 		enemy = new Enemy(terrain, 2, 2);
     }
 
     /**
@@ -77,21 +89,32 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         // TODO Auto-generated method stub
         GL2 gl = drawable.getGL().getGL2();
 
+        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
+        
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
-        gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
         
         camera.setView(gl);
         if (avatar.getThirdPerson()) {
         	avatar.draw(gl);
         }
         avatar.update();
+        //for (Enemy enemy: enemies) {
+        	enemy.draw();
+        //}
         myTerrain.draw(gl);
+        
+    }
+    
+    public void initEnemies(Terrain terrain) {
+    	Enemy enemy1 = new Enemy(terrain, 2, 1);
+    	//enemies.add(enemy1);
     }
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
-        // TODO Auto-generated method stub
+        GL2 gl = drawable.getGL().getGL2();
+        enemy.dispose(gl);
 
     }
   
@@ -112,6 +135,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
  		gl.glLoadIdentity();
  		
  		camera.initCamera(gl);
+ 		//for (Enemy enemy: enemies) {
+ 			enemy.init(gl);
+ 		//}
     }
 
     @Override
@@ -125,7 +151,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
         GLU glu = new GLU();
 
-        glu.gluPerspective(60.0, (float)width/(float)height, 1.0, 20.0);
+        glu.gluPerspective(60, (float)width/(float)height, 1, 20);
     }
     
     @Override
