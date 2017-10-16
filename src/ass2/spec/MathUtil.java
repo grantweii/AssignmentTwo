@@ -30,5 +30,14 @@ public class MathUtil {
         double[] unitVector = {v[0]/mod,v[1]/mod,v[2]/mod};
         return unitVector;
     }
+    
+    public static void normalize(double[] v) {
+    	double d = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);  
+        if (d != 0.0) {  
+           v[0]/=d; 
+           v[1]/=d;  
+           v[2]/=d;  
+        }
+    }
 
 }

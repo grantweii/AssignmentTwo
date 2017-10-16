@@ -33,6 +33,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     //private ArrayList<Enemy> enemies;
     private Enemy enemy;
     private Camera camera;
+    //private TriangleVBO triangle;
 	    
     public Game(Terrain terrain) {
         super("Assignment 2");
@@ -43,6 +44,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     	//this.enemies = new ArrayList<Enemy>();
  		//initEnemies(terrain);
  		enemy = new Enemy(terrain, 2, 2);
+ 		//triangle = new TriangleVBO();
     }
 
     /**
@@ -100,10 +102,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         }
         avatar.update();
         //for (Enemy enemy: enemies) {
-        	enemy.draw();
         //}
+        enemy.draw(gl);
         myTerrain.draw(gl);
-        
+        //triangle.display(drawable);
     }
     
     public void initEnemies(Terrain terrain) {
@@ -115,7 +117,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     public void dispose(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
         enemy.dispose(gl);
-
+        //triangle.dispose(drawable);
     }
   
     @Override
@@ -131,13 +133,14 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         //turn on a light such as this default light.
         gl.glEnable(GL2.GL_LIGHT0);
         
-        gl.glMatrixMode(GL2.GL_PROJECTION);
- 		gl.glLoadIdentity();
+//        gl.glMatrixMode(GL2.GL_PROJECTION);
+// 		gl.glLoadIdentity();
  		
  		camera.initCamera(gl);
  		//for (Enemy enemy: enemies) {
- 			enemy.init(gl);
+ 		enemy.init(gl);
  		//}
+ 		//triangle.init(drawable);
     }
 
     @Override
