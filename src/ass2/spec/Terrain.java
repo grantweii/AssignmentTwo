@@ -4,7 +4,6 @@ import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 
@@ -200,12 +199,20 @@ public class Terrain {
         myRoads.add(road);
     }
 
+    /**
+     * Draws the terrain
+     *
+     * @param gl
+     */
     public void draw(GL2 gl) {
 
+        // Push the matrix and lighting
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
+        // Set the polygon mode to fill
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
+        // Set constants for the terrain's material
         float[] ambient = {0.2f, 0.25f, 0.2f, 1.0f};
         float[] diffuse = {0.2f, 0.6f, 0.3f, 1.0f};
         float[] specular = {0.0f, 0.0f, 0.0f, 1.0f};
@@ -214,10 +221,13 @@ public class Terrain {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 
+        // TODO: Get the terrian textures
+
         // Turn on back face culling
         gl.glEnable(GL2.GL_CULL_FACE);
         gl.glCullFace(GL2.GL_BACK);
 
+        // Increment through each square and draw the left and right triangles
         for (int z = 0; z < this.size().height - 1; z++) {
             for (int x = 0; x < this.size().width - 1; x++) {
 
@@ -226,11 +236,12 @@ public class Terrain {
                 double[] v2 = {x, getGridAltitude(x, z + 1), z + 1};
                 double[] v3 = {x + 1, getGridAltitude(x + 1, z), z};
 
+                // Find the normal for the triangle
                 double[] faceNormL = MathUtil.getNormal(v1, v2, v3);
 
+                // TODO: Get the textures for the left triangle
+
                 // Draw Left Triangle
-//                gl.glColor3f(1, 1, 1);
-//                gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_LINE);
                 gl.glNormal3dv(faceNormL, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
@@ -245,11 +256,12 @@ public class Terrain {
                 double[] v5 = {x, getGridAltitude(x, z + 1), z + 1};
                 double[] v6 = {x + 1, getGridAltitude(x + 1, z + 1), z + 1};
 
+                // Find the normal for the triangle
                 double[] faceNormR = MathUtil.getNormal(v4, v5, v6);
 
+                // TODO: Get the textures for the right triangle
+
                 // Draw Right Triangle
-//                gl.glColor3f(1, 1, 1);
-//                gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_LINE);
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
@@ -263,19 +275,24 @@ public class Terrain {
 
         }
 
+        // Iterate over the list of trees and draw them
         Iterator treeIt = this.trees().iterator();
         while (treeIt.hasNext()) {
             Tree currTree = (Tree) treeIt.next();
-            currTree.draw2(gl);
+            currTree.draw(gl);
         }
 
+        // Iterate over the list of roads and draw them
         Iterator roadIt = this.roads().iterator();
         while (roadIt.hasNext()) {
            Road currRoad = (Road) roadIt.next();
            currRoad.draw(gl);
         }
 
+        // Set the polygon mode back to fill to avoid GPU glitch
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
+        // Pop the lighting and matrix
         gl.glPopAttrib();
         gl.glPopMatrix();
     }
