@@ -15,7 +15,7 @@ public class Avatar implements KeyListener {
 	private boolean thirdPerson;
 	private Terrain terrain;
 	private double x = 1;
-	private double y = 0;
+	private double y = 0.3;
 	private double z = 4;
 	private double myRotation = 300;
 	private double rotationStep = 2;
@@ -62,7 +62,7 @@ public class Avatar implements KeyListener {
         double dz = Math.sin(Math.toRadians(myRotation)) * speed + z;
         x = dx;
         z = dz;
-        y = terrain.altitude(x, z) + 0.2;
+        y = terrain.altitude(x, z) + 0.3;
 	}
 	
 	public void moveBackward() {
@@ -70,7 +70,7 @@ public class Avatar implements KeyListener {
         double dz = z - Math.sin(Math.toRadians(myRotation)) * speed;
         x = dx;
         z = dz;
-        y = terrain.altitude(x, z) + 0.2;
+        y = terrain.altitude(x, z) + 0.3;
 	}
 	
 	public void turnRight() {
@@ -125,14 +125,6 @@ public class Avatar implements KeyListener {
 	
 	public void setRotation(double newRotation) {
 		myRotation = newRotation;
-	}
-	
-	public void setThirdPerson() {
-		if (!thirdPerson) {
-			thirdPerson = true;
-		} else {
-			thirdPerson = false;
-		}
 	}
 
 	@Override

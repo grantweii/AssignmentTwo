@@ -34,6 +34,11 @@ public class Game extends JFrame implements GLEventListener {
     private Enemy enemy;
     private Camera camera;
     //private TriangleVBO triangle;
+    
+    private int shaderProgram;
+    private static final String VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
+    private static final String FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
+
 	    
     public Game(Terrain terrain) {
         super("Assignment 2");
@@ -101,9 +106,8 @@ public class Game extends JFrame implements GLEventListener {
         //for (Enemy enemy: enemies) {
         //}
 
-        enemy.draw(gl);
+        //enemy.draw(gl);
         myTerrain.draw(gl);
-        //triangle.display(drawable);
     }
     
     public void initEnemies(Terrain terrain) {
@@ -132,10 +136,13 @@ public class Game extends JFrame implements GLEventListener {
         // turn on a light such as this default light.
         // gl.glEnable(GL2.GL_LIGHT0);
  		
- 		//for (Enemy enemy: enemies) {
- 		enemy.init(gl);
- 		//}
- 		//triangle.init(drawable);
+        try {
+	   		shaderProgram = Shader.initShaders(gl,VERTEX_SHADER,FRAGMENT_SHADER);   		 
+	        }
+	        catch (Exception e) {
+	            e.printStackTrace();
+	            System.exit(1);
+	        }
     }
 
     @Override
@@ -180,4 +187,5 @@ public class Game extends JFrame implements GLEventListener {
 
         gl.glPopMatrix();
     }
+    
 }
