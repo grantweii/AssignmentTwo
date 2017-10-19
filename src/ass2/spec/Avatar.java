@@ -151,7 +151,11 @@ public class Avatar implements KeyListener {
             	break;
             }
             case KeyEvent.VK_T: {
-            	thirdPerson = true;
+            	if (thirdPerson == false) {
+            		thirdPerson = true;
+            	} else {
+            		thirdPerson = false;
+            	}
             	break;
             }
             default:

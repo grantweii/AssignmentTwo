@@ -16,6 +16,14 @@ import com.jogamp.opengl.GL2;
  * @author 
  */
 public class Shader {
+	
+    static public class CompilationException extends RuntimeException {
+
+        public CompilationException(String message) {
+            super(message);
+        }
+        
+    }
     
     private String[] mySource;
     private int myType;
@@ -116,11 +124,4 @@ public class Shader {
         return shaderprogram;
     }
     
-    static public class CompilationException extends RuntimeException {
-
-        public CompilationException(String message) {
-            super(message);
-        }
-        
-    }
 }

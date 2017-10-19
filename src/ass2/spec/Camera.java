@@ -6,11 +6,6 @@ import com.jogamp.opengl.glu.GLU;
 public class Camera {
 	
 	private Avatar avatar;
-		
-	private double fieldOfView = 180;
-	private double near = 0.01;
-	private double far = 1000;
-	private double aspectRatio = 4/3;
 	
 	public Camera(Avatar avatar) {
 		this.avatar = avatar;

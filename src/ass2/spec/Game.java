@@ -103,23 +103,16 @@ public class Game extends JFrame implements GLEventListener {
         setupSun(gl);
 
         if (avatar.getThirdPerson()) avatar.draw(gl);
-        //for (Enemy enemy: enemies) {
-        //}
-
-        //enemy.draw(gl);
+        
+        //enemy.draw(gl,shaderProgram);
         myTerrain.draw(gl);
     }
     
-    public void initEnemies(Terrain terrain) {
-    	Enemy enemy1 = new Enemy(terrain, 2, 1);
-    	//enemies.add(enemy1);
-    }
+  
 
     @Override
     public void dispose(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-        //enemy.dispose(gl);
-        //triangle.dispose(drawable);
     }
   
     @Override
