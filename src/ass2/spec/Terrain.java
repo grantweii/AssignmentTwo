@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.util.texture.Texture;
+
+import javax.xml.soap.Text;
 
 /**
  * COMMENT: Comment HeightMap
@@ -204,13 +207,17 @@ public class Terrain {
      *
      * @param gl
      */
-    public void draw(GL2 gl) {
+    public void draw(GL2 gl, Texture terrainTexture, Texture roadTexture) {
 
         // Push the matrix and lighting
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
         // Set the polygon mode to fill
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
+        // Set the terrain texture
+        terrainTexture.enable(gl);
+        terrainTexture.bind(gl);
 
         // Set constants for the terrain's material
         float[] ambient = {0.2f, 0.25f, 0.2f, 1.0f};
@@ -221,11 +228,11 @@ public class Terrain {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 
-        // TODO: Get the terrian textures
+        // TODO: Determien if back face culling is necessary
 
         // Turn on back face culling
-        gl.glEnable(GL2.GL_CULL_FACE);
-        gl.glCullFace(GL2.GL_BACK);
+//        gl.glEnable(GL2.GL_CULL_FACE);
+//        gl.glCullFace(GL2.GL_BACK);
 
         // Increment through each square and draw the left and right triangles
         for (int z = 0; z < this.size().height - 1; z++) {
@@ -245,8 +252,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormL, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
+                    gl.glTexCoord2d(0,0);
                     gl.glVertex3dv(v1, 0);
+                    gl.glTexCoord2d(0,1);
                     gl.glVertex3dv(v2, 0);
+                    gl.glTexCoord2d(1,0);
                     gl.glVertex3dv(v3, 0);
                 }
                 gl.glEnd();
@@ -265,8 +275,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
+                    gl.glTexCoord2d(1, 0);
                     gl.glVertex3dv(v4, 0);
+                    gl.glTexCoord2d(0, 1);
                     gl.glVertex3dv(v5, 0);
+                    gl.glTexCoord2d(1, 1);
                     gl.glVertex3dv(v6, 0);
 
                 }
@@ -274,6 +287,7 @@ public class Terrain {
             }
 
         }
+        terrainTexture.disable(gl);
 
         // Iterate over the list of trees and draw them
         Iterator treeIt = this.trees().iterator();
@@ -286,7 +300,7 @@ public class Terrain {
         Iterator roadIt = this.roads().iterator();
         while (roadIt.hasNext()) {
            Road currRoad = (Road) roadIt.next();
-           currRoad.draw(gl);
+           currRoad.draw(gl, roadTexture);
         }
 
         // Set the polygon mode back to fill to avoid GPU glitch
