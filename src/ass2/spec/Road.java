@@ -3,6 +3,7 @@ package ass2.spec;
 import java.util.ArrayList;
 import java.util.List;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  * COMMENT: Comment Road 
@@ -161,10 +162,13 @@ public class Road {
      *
      * @param gl
      */
-    public void draw(GL2 gl) {
+    public void draw(GL2 gl, Texture texture) {
         // TODO: Add textures to the road
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
+
+        texture.enable(gl);
+        texture.bind(gl);
 
         // This lifts the road slightly above the ground to avoid z-fighting
         double height = getAltitude() + ALTITUDE_OFFSET;
@@ -186,7 +190,7 @@ public class Road {
         // Increment over the curve starting at 0 and incrementing by the
         // value of step until we have incremented over the entire distance
         // of the road (roadDistance)
-        for (double t = 0.0; t + step < roadDistance; t+=step) {
+        for (double t = 0.0; t < roadDistance; t+=step) {
 
             // Use the point method to find the coordinates of the curve at the
             // value of t and the subsequent two points
@@ -213,7 +217,8 @@ public class Road {
             double[] perpVectorCN = MathUtil.getUnitVector(MathUtil.crossProduct(currNextVector, upVector));
             // Multiply this by half the width
             // This will be used for getting the points at the extremes of the width of the curve
-            // at the start of the segmentperpVectorCN[0] = perpVectorCN[0]*(width()/2);
+            // at the start of the segment
+            perpVectorCN[0] = perpVectorCN[0]*(width()/2);
             perpVectorCN[1] = perpVectorCN[1]*(width()/2);
             perpVectorCN[2] = perpVectorCN[2]*(width()/2);
 
@@ -245,14 +250,20 @@ public class Road {
             {
                 // Draw the left triangle
                 gl.glNormal3dv(upVector,0);
+                gl.glTexCoord2d(1,0);
                 gl.glVertex3dv(currL,0);
+                gl.glTexCoord2d(1,1);
                 gl.glVertex3dv(nextL,0);
+                gl.glTexCoord2d(0,1);
                 gl.glVertex3dv(nextR,0);
 
                 // Draw the right triangle
                 gl.glNormal3dv(upVector,0);
+                gl.glTexCoord2d(0,0);
                 gl.glVertex3dv(currR,0);
+                gl.glTexCoord2d(1,0);
                 gl.glVertex3dv(currL,0);
+                gl.glTexCoord2d(0,1);
                 gl.glVertex3dv(nextR,0);
             }
             gl.glEnd();

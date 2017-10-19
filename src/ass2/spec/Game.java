@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -19,6 +20,8 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 /**
  * COMMENT: Comment Game
@@ -34,7 +37,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private Enemy enemy;
     private Camera camera;
     //private TriangleVBO triangle;
-	    
+    private TexturePack texturePack;
+
     public Game(Terrain terrain) {
         super("Assignment 2");
         myTerrain = terrain;
@@ -45,6 +49,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
  		//initEnemies(terrain);
  		enemy = new Enemy(terrain, 2, 2);
  		//triangle = new TriangleVBO();
+        texturePack = new TexturePack();
     }
 
     /**
@@ -67,10 +72,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         setSize(800, 600);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-        //this doesnt work!
-//        InputKeyListener keyListener = new InputKeyListener();
-//        panel.addKeyListener(keyListener);
     }
 
     /**
@@ -106,8 +107,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         //}
 
         enemy.draw(gl);
-        myTerrain.draw(gl);
-        //triangle.display(drawable);
+        myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());        //triangle.display(drawable);
     }
     
     public void initEnemies(Terrain terrain) {
@@ -131,6 +131,18 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glEnable(GL2.GL_NORMALIZE);
         // By enabling lighting, color is worked out differently.
         gl.glEnable(GL2.GL_LIGHTING);
+
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        try {
+            texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
+            texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
+        } catch (IOException e) {
+            System.out.println("here");
+            e.printStackTrace();
+        }
+        gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
 
         // When you enable lighting you must still actually
         // turn on a light such as this default light.
@@ -226,7 +238,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         gl.glClearColor(0.529411f, 0.807843f, 0.980392f, 1.0f); //Sky Blue, RGB: 135-206-250
 
         //Global Ambient light
-        float[] globalAmb = {0.5f, 0.5f, 0.5f, 1f}; //full intensity
+        float[] globalAmb = {1f, 1f, 1f, 1f}; //full intensity
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, globalAmb, 0);
 
         //Sunlight (LIGHT1)
@@ -238,7 +250,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         finalSunlightVector[2] = sunlightVector[2];
         finalSunlightVector[3] = 0; //for directional light
 
-        float[] diffuseComponent = new float[]{0.2f, 0.2f, 0.2f, 0.1f}; //diffuse all light
+        float[] diffuseComponent = new float[]{0.8f, 0.8f, 0.8f, 0.1f}; //diffuse all light
 
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuseComponent, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, finalSunlightVector, 0);
