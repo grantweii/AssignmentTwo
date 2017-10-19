@@ -3,9 +3,10 @@ package ass2.spec;
 import java.util.ArrayList;
 import java.util.List;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
- * COMMENT: Comment Road 
+ * COMMENT: Comment Road
  *
  * @author malcolmr
  */
@@ -18,7 +19,7 @@ public class Road {
     private static int NUM_ROAD_SEGMENTS = 100;
     private static double ALTITUDE_OFFSET = 0.01;
 
-    /** 
+    /**
      * Create a new road starting at the specified point
      */
     public Road(double width, double x0, double y0) {
@@ -29,7 +30,7 @@ public class Road {
     }
 
     /**
-     * Create a new road with the specified spine 
+     * Create a new road with the specified spine
      *
      * @param width
      * @param spine
@@ -45,7 +46,7 @@ public class Road {
 
     /**
      * The width of the road.
-     * 
+     *
      * @return
      */
     public double width() {
@@ -55,7 +56,7 @@ public class Road {
     /**
      * Add a new segment of road, beginning at the last point added and ending at (x3, y3).
      * (x1, y1) and (x2, y2) are interpolated as bezier control points.
-     * 
+     *
      * @param x1
      * @param y1
      * @param x2
@@ -69,12 +70,12 @@ public class Road {
         myPoints.add(x2);
         myPoints.add(y2);
         myPoints.add(x3);
-        myPoints.add(y3);        
+        myPoints.add(y3);
     }
-    
+
     /**
      * Get the number of segments in the curve
-     * 
+     *
      * @return
      */
     public int size() {
@@ -83,7 +84,7 @@ public class Road {
 
     /**
      * Get the specified control point.
-     * 
+     *
      * @param i
      * @return
      */
@@ -93,20 +94,20 @@ public class Road {
         p[1] = myPoints.get(i*2+1);
         return p;
     }
-    
+
     /**
      * Get a point on the spine. The parameter t may vary from 0 to size().
      * Points on the kth segment take have parameters in the range (k, k+1).
-     * 
+     *
      * @param t
      * @return
      */
     public double[] point(double t) {
         int i = (int)Math.floor(t);
         t = t - i;
-        
+
         i *= 6;
-        
+
         double x0 = myPoints.get(i++);
         double y0 = myPoints.get(i++);
         double x1 = myPoints.get(i++);
@@ -115,12 +116,12 @@ public class Road {
         double y2 = myPoints.get(i++);
         double x3 = myPoints.get(i++);
         double y3 = myPoints.get(i++);
-        
+
         double[] p = new double[2];
 
         p[0] = b(0, t) * x0 + b(1, t) * x1 + b(2, t) * x2 + b(3, t) * x3;
-        p[1] = b(0, t) * y0 + b(1, t) * y1 + b(2, t) * y2 + b(3, t) * y3;        
-        
+        p[1] = b(0, t) * y0 + b(1, t) * y1 + b(2, t) * y2 + b(3, t) * y3;
+
         return p;
     }
 
@@ -130,28 +131,28 @@ public class Road {
 
     /**
      * Calculate the Bezier coefficients
-     * 
+     *
      * @param i
      * @param t
      * @return
      */
     private double b(int i, double t) {
-        
+
         switch(i) {
-        
-        case 0:
-            return (1-t) * (1-t) * (1-t);
 
-        case 1:
-            return 3 * (1-t) * (1-t) * t;
-            
-        case 2:
-            return 3 * (1-t) * t * t;
+            case 0:
+                return (1-t) * (1-t) * (1-t);
 
-        case 3:
-            return t * t * t;
+            case 1:
+                return 3 * (1-t) * (1-t) * t;
+
+            case 2:
+                return 3 * (1-t) * t * t;
+
+            case 3:
+                return t * t * t;
         }
-        
+
         // this should never happen
         throw new IllegalArgumentException("" + i);
     }
@@ -161,10 +162,13 @@ public class Road {
      *
      * @param gl
      */
-    public void draw(GL2 gl) {
+    public void draw(GL2 gl, Texture texture) {
         // TODO: Add textures to the road
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
+
+        texture.enable(gl);
+        texture.bind(gl);
 
         // This lifts the road slightly above the ground to avoid z-fighting
         double height = getAltitude() + ALTITUDE_OFFSET;
@@ -186,7 +190,7 @@ public class Road {
         // Increment over the curve starting at 0 and incrementing by the
         // value of step until we have incremented over the entire distance
         // of the road (roadDistance)
-        for (double t = 0.0; t + step < roadDistance; t+=step) {
+        for (double t = 0.0; t < roadDistance; t+=step) {
 
             // Use the point method to find the coordinates of the curve at the
             // value of t and the subsequent two points
@@ -213,7 +217,8 @@ public class Road {
             double[] perpVectorCN = MathUtil.getUnitVector(MathUtil.crossProduct(currNextVector, upVector));
             // Multiply this by half the width
             // This will be used for getting the points at the extremes of the width of the curve
-            // at the start of the segmentperpVectorCN[0] = perpVectorCN[0]*(width()/2);
+            // at the start of the segment
+            perpVectorCN[0] = perpVectorCN[0]*(width()/2);
             perpVectorCN[1] = perpVectorCN[1]*(width()/2);
             perpVectorCN[2] = perpVectorCN[2]*(width()/2);
 
@@ -245,14 +250,20 @@ public class Road {
             {
                 // Draw the left triangle
                 gl.glNormal3dv(upVector,0);
+                gl.glTexCoord2d(1,0);
                 gl.glVertex3dv(currL,0);
+                gl.glTexCoord2d(1,1);
                 gl.glVertex3dv(nextL,0);
+                gl.glTexCoord2d(0,1);
                 gl.glVertex3dv(nextR,0);
 
                 // Draw the right triangle
                 gl.glNormal3dv(upVector,0);
+                gl.glTexCoord2d(0,0);
                 gl.glVertex3dv(currR,0);
+                gl.glTexCoord2d(1,0);
                 gl.glVertex3dv(currL,0);
+                gl.glTexCoord2d(0,1);
                 gl.glVertex3dv(nextR,0);
             }
             gl.glEnd();

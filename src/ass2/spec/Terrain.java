@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
+import com.jogamp.opengl.util.texture.Texture;
 
 /**
  * COMMENT: Comment HeightMap
@@ -204,13 +205,16 @@ public class Terrain {
      *
      * @param gl
      */
-    public void draw(GL2 gl) {
+    public void draw(GL2 gl, Texture terrainTexture, Texture roadTexture) {
 
         // Push the matrix and lighting
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
         // Set the polygon mode to fill
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
+        terrainTexture.enable(gl);
+        terrainTexture.bind(gl);
 
         // Set constants for the terrain's material
         float[] ambient = {0.2f, 0.25f, 0.2f, 1.0f};
@@ -245,8 +249,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormL, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
+                    gl.glTexCoord2d(0,0);
                     gl.glVertex3dv(v1, 0);
+                    gl.glTexCoord2d(0,1);
                     gl.glVertex3dv(v2, 0);
+                    gl.glTexCoord2d(1,0);
                     gl.glVertex3dv(v3, 0);
                 }
                 gl.glEnd();
@@ -265,8 +272,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
+                    gl.glTexCoord2d(1, 0);
                     gl.glVertex3dv(v4, 0);
+                    gl.glTexCoord2d(0, 1);
                     gl.glVertex3dv(v5, 0);
+                    gl.glTexCoord2d(1, 1);
                     gl.glVertex3dv(v6, 0);
 
                 }
@@ -274,6 +284,7 @@ public class Terrain {
             }
 
         }
+        terrainTexture.disable(gl);
 
         // Iterate over the list of trees and draw them
         Iterator treeIt = this.trees().iterator();
@@ -285,8 +296,8 @@ public class Terrain {
         // Iterate over the list of roads and draw them
         Iterator roadIt = this.roads().iterator();
         while (roadIt.hasNext()) {
-           Road currRoad = (Road) roadIt.next();
-           currRoad.draw(gl);
+            Road currRoad = (Road) roadIt.next();
+            currRoad.draw(gl, roadTexture);
         }
 
         // Set the polygon mode back to fill to avoid GPU glitch

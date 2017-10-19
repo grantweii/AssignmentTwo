@@ -4,6 +4,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
@@ -19,6 +20,8 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 /**
  * COMMENT: Comment Game
@@ -34,7 +37,8 @@ public class Game extends JFrame implements GLEventListener {
     private Enemy enemy;
     private Camera camera;
     //private TriangleVBO triangle;
-    
+    private TexturePack texturePack;
+
     private int shaderProgram;
     private static final String VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
     private static final String FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
@@ -50,6 +54,7 @@ public class Game extends JFrame implements GLEventListener {
  		//initEnemies(terrain);
  		enemy = new Enemy(terrain, 2, 2);
  		//triangle = new TriangleVBO();
+        texturePack = new TexturePack();
     }
 
     /**
@@ -105,7 +110,8 @@ public class Game extends JFrame implements GLEventListener {
         if (avatar.getThirdPerson()) avatar.draw(gl);
         
         //enemy.draw(gl,shaderProgram);
-        myTerrain.draw(gl);
+        myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
+        //triangle.display(drawable);
     }
     
   
@@ -125,12 +131,24 @@ public class Game extends JFrame implements GLEventListener {
         // By enabling lighting, color is worked out differently.
         gl.glEnable(GL2.GL_LIGHTING);
 
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        try {
+            texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
+            texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
+        } catch (IOException e) {
+            System.out.println("here");
+            e.printStackTrace();
+        }
+        gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
+
         // When you enable lighting you must still actually
         // turn on a light such as this default light.
         // gl.glEnable(GL2.GL_LIGHT0);
  		
         try {
-	   		shaderProgram = Shader.initShaders(gl,VERTEX_SHADER,FRAGMENT_SHADER);   		 
+	   		shaderProgram = Shader.initShaders(gl,VERTEX_SHADER,FRAGMENT_SHADER);
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();
@@ -149,7 +167,7 @@ public class Game extends JFrame implements GLEventListener {
 
         GLU glu = new GLU();
 
-        glu.gluPerspective(60, (float)width/(float)height, 0.01, 20);
+        glu.gluPerspective(60, (float)width/(float)height, 0.1, 20);
     }
 
     private void setupSun(GL2 gl) {
@@ -161,7 +179,7 @@ public class Game extends JFrame implements GLEventListener {
         gl.glClearColor(0.529411f, 0.807843f, 0.980392f, 1.0f); //Sky Blue, RGB: 135-206-250
 
         //Global Ambient light
-        float[] globalAmb = {0.5f, 0.5f, 0.5f, 1f}; //full intensity
+        float[] globalAmb = {1f, 1f, 1f, 1f}; //full intensity
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, globalAmb, 0);
 
         //Sunlight (LIGHT1)
@@ -173,7 +191,7 @@ public class Game extends JFrame implements GLEventListener {
         finalSunlightVector[2] = sunlightVector[2];
         finalSunlightVector[3] = 0; //for directional light
 
-        float[] diffuseComponent = new float[]{0.2f, 0.2f, 0.2f, 0.1f}; //diffuse all light
+        float[] diffuseComponent = new float[]{0.8f, 0.8f, 0.8f, 0.1f}; //diffuse all light
 
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuseComponent, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, finalSunlightVector, 0);
