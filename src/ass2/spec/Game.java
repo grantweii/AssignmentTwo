@@ -118,7 +118,7 @@ public class Game extends JFrame implements GLEventListener {
 
         if (avatar.getThirdPerson()) avatar.draw(gl);
         
-        //enemy.draw(gl,shaderProgram);
+        enemy.draw(gl,shaderProgram);
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
         //triangle.display(drawable);
 
@@ -148,6 +148,7 @@ public class Game extends JFrame implements GLEventListener {
     @Override
     public void dispose(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
+        //enemy.dispose(gl);
     }
   
     @Override
