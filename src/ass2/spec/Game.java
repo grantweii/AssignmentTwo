@@ -43,7 +43,16 @@ public class Game extends JFrame implements GLEventListener {
     private static final String VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
     private static final String FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
 
-	    
+    // Sunlight variables
+    private float sunColFactor = 0;
+    private float sunPosFactor = -0.4999f;
+    private boolean sunForward = true;
+    private float[] blueSunColor = {0.251f,0.612f,1f};
+    private float[] earlySunColor = {0.623f,0.594f,0.58035f};
+    private float[] lateSunColor = {1f,0.576f,0.161f};
+    private float[] earlySkyColor = {0.529411f, 0.807843f, 0.980392f};
+    private float[] lateSkyColor = {0.976f, 0.820f, 0.522f};
+
     public Game(Terrain terrain) {
         super("Assignment 2");
         myTerrain = terrain;
@@ -112,6 +121,26 @@ public class Game extends JFrame implements GLEventListener {
         //enemy.draw(gl,shaderProgram);
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
         //triangle.display(drawable);
+
+        // Change sunlight factors so that the position of the sun and its colour shift
+        if (sunForward) {
+            sunColFactor += 0.002;
+            sunPosFactor += 0.002;
+        } else {
+            sunColFactor -= 0.002;
+            sunPosFactor -= 0.002;
+        }
+        if (sunColFactor > 1) {
+            sunForward = false;
+            sunColFactor = 0.9999f;
+            sunPosFactor = 0.4999f;
+        } else if (sunColFactor < 0) {
+            sunForward = true;
+            sunColFactor = 0.0001f;
+            sunPosFactor = -0.4999f;
+        }
+        System.out.println(sunPosFactor);
+        System.out.println(sunForward);
     }
     
   
@@ -175,23 +204,35 @@ public class Game extends JFrame implements GLEventListener {
 
         gl.glEnable(GL2.GL_LIGHT1);
 
+        // Interpolate between the early and late sunlight colours using the
+        // the sunColFactor
+
+        float[] sunColor = {earlySunColor[0]*sunColFactor + lateSunColor[0]*(1-sunColFactor),
+                            earlySunColor[1]*sunColFactor + lateSunColor[1]*(1-sunColFactor),
+                            earlySunColor[2]*sunColFactor + lateSunColor[2]*(1-sunColFactor)};
+
+        // Interpolate between the early and late sky colours
+        float[] skyColor = {earlySkyColor[0]*sunColFactor + lateSkyColor[0]*(1-sunColFactor),
+                            earlySkyColor[1]*sunColFactor + lateSkyColor[1]*(1-sunColFactor),
+                            earlySkyColor[2]*sunColFactor + lateSkyColor[2]*(1-sunColFactor)};
+
         //Background colour
-        gl.glClearColor(0.529411f, 0.807843f, 0.980392f, 1.0f); //Sky Blue, RGB: 135-206-250
+        gl.glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0f); //Sky Blue, RGB: 135-206-250
 
         //Global Ambient light
-        float[] globalAmb = {1f, 1f, 1f, 1f}; //full intensity
+        float[] globalAmb = {sunColor[0], sunColor[1], sunColor[2], 1f}; //full intensity
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, globalAmb, 0);
 
         //Sunlight (LIGHT1)
         float[] sunlightVector = myTerrain.getSunlight();
         float[] finalSunlightVector = new float[4];
 
-        finalSunlightVector[0] = sunlightVector[0];
+        finalSunlightVector[0] = sunlightVector[0]+sunPosFactor;
         finalSunlightVector[1] = sunlightVector[1];
-        finalSunlightVector[2] = sunlightVector[2];
-        finalSunlightVector[3] = 0; //for directional light
+        finalSunlightVector[2] = sunlightVector[2]-sunPosFactor;
+        finalSunlightVector[3] = 0; // for directional light
 
-        float[] diffuseComponent = new float[]{0.8f, 0.8f, 0.8f, 0.1f}; //diffuse all light
+        float[] diffuseComponent = new float[]{sunColor[0], sunColor[1], sunColor[2], 0.1f}; //diffuse all light
 
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuseComponent, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, finalSunlightVector, 0);
