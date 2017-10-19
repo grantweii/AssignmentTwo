@@ -1,4 +1,4 @@
-#version 130
+#version 120
 
 //Just does standard transformations and passes the color from
 // the jogl program onto the fragment shader

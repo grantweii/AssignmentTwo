@@ -1,9 +1,9 @@
-#version 130
+#version 120
 
-out vec3 N; 
-out vec4 v; 
+varying vec3 N; 
+varying vec4 v; 
 
-out vec2 texCoordV;
+varying vec2 texCoordV;
 
 void main (void) {	
     v = gl_ModelViewMatrix * gl_Vertex;

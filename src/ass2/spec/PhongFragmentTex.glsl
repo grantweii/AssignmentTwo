@@ -1,12 +1,12 @@
-#version 130
+#version 120
 
-in vec2 texCoordV;
+varying vec2 texCoordV;
 
 uniform sampler2D texUnit1;
 //uniform sampler2D texUnit2;
 
-in vec3 N;
-in vec4 v;
+varying vec3 N;
+varying vec4 v;
 
 /* We are only taking into consideration light0 and assuming it is a point light */
 void main (void) {	
