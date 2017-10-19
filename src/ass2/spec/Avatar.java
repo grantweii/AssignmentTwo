@@ -1,19 +1,21 @@
 package ass2.spec;
 
-import com.jogamp.newt.event.KeyEvent;
-import com.jogamp.newt.event.KeyListener;
+
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.gl2.GLUT;
 
-public class Avatar {
+public class Avatar implements KeyListener {
 	
 	private boolean thirdPerson;
 	private Terrain terrain;
 	private double x = 1;
-	private double y = 0;
+	private double y = 0.3;
 	private double z = 4;
 	private double myRotation = 300;
 	private double rotationStep = 2;
@@ -60,7 +62,7 @@ public class Avatar {
         double dz = Math.sin(Math.toRadians(myRotation)) * speed + z;
         x = dx;
         z = dz;
-        System.out.println(x);
+        y = terrain.altitude(x, z) + 0.3;
 	}
 	
 	public void moveBackward() {
@@ -68,6 +70,7 @@ public class Avatar {
         double dz = z - Math.sin(Math.toRadians(myRotation)) * speed;
         x = dx;
         z = dz;
+        y = terrain.altitude(x, z) + 0.3;
 	}
 	
 	public void turnRight() {
@@ -123,54 +126,50 @@ public class Avatar {
 	public void setRotation(double newRotation) {
 		myRotation = newRotation;
 	}
-	
-	public void setThirdPerson() {
-		if (!thirdPerson) {
-			thirdPerson = true;
-		} else {
-			thirdPerson = false;
-		}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+        switch (e.getKeyCode()) {
+        	
+        	//UP, DOWN is translation
+            case KeyEvent.VK_UP: {
+                moveForward();
+                break;
+            }
+            case KeyEvent.VK_DOWN: {
+            	moveBackward();
+            	break;
+            }
+            //LEFT RIGHT is rotation
+            case KeyEvent.VK_LEFT: {
+            	turnLeft();
+                break;
+            }
+            case KeyEvent.VK_RIGHT: {
+            	turnRight();
+            	break;
+            }
+            case KeyEvent.VK_T: {
+            	thirdPerson = true;
+            	break;
+            }
+            default:
+                break;
+        }
+		
 	}
 
-	public void update() {
-		y = terrain.altitude(x, z);
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
 	}
-	
 
-//	@Override
-//	public void keyPressed(KeyEvent e) {
-//		// TODO Auto-generated method stub
-//        switch (e.getKeyCode()) {
-//        	
-//        	//UP, DOWN is translation
-//            case KeyEvent.VK_UP: {
-//                moveForward();
-//                break;
-//            }
-//            case KeyEvent.VK_DOWN: {
-//            	moveBackward();
-//            	break;
-//            }
-//            //LEFT RIGHT is rotation
-//            case KeyEvent.VK_LEFT: {
-//            	turnLeft();
-//                break;
-//            }
-//            case KeyEvent.VK_RIGHT: {
-//            	turnRight();
-//            	break;
-//            }
-//            default:
-//                break;
-//        }
-//		
-//	}
-//
-//	@Override
-//	public void keyReleased(KeyEvent e) {
-//		// TODO Auto-generated method stub
-//		
-//	}
-
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
 	
 }

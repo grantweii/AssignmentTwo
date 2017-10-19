@@ -6,7 +6,6 @@ import com.jogamp.opengl.glu.GLU;
 public class Camera {
 	
 	private Avatar avatar;
-	private GLU glu;
 		
 	private double fieldOfView = 180;
 	private double near = 0.01;
@@ -17,14 +16,6 @@ public class Camera {
 		this.avatar = avatar;
 	}
 	
-	public void initCamera(GL2 gl) {
-		gl.glMatrixMode(GL2.GL_PROJECTION);
-		gl.glLoadIdentity();
-		
-		//fieldofview, aspectratio, near, far
-		glu = new GLU();
-		glu.gluPerspective(fieldOfView, aspectRatio, near, far);
-	}
 	
 	public void setView(GL2 gl) {
 		double avatarX = avatar.getX();
@@ -46,6 +37,8 @@ public class Camera {
 		}
 		gl.glMatrixMode(GL2.GL_MODELVIEW);  
 		gl.glLoadIdentity();
+		
+		GLU glu = new GLU();
 		
 		glu.gluLookAt(avatarX - xOffset, avatarY + yOffset + thirdPersonOffset, avatarZ - zOffset, 
 			avatarX + Math.cos(Math.toRadians(avatarRotation)), 

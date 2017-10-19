@@ -10,6 +10,8 @@ public class Enemy {
 	
 	private Terrain terrain;
 	
+	private String textureString;
+	
 	private int[] bufferIDs;
 	public float[] positions;
 	private float[] normals;
@@ -48,34 +50,8 @@ public class Enemy {
 		this.positions[0] = x;
 		this.positions[1] = Float.parseFloat(String.valueOf(terrain.altitude(x, z)));
 		this.positions[2] = z;
+		
 	}
-	
-
-//	//using vbos
-//	public void init(GL2 gl) {
-//        System.out.println("init");
-//		
-//		//parse data as floatbuffer
-//    	FloatBuffer posData = Buffers.newDirectFloatBuffer(pos);
-//    	FloatBuffer colData = Buffers.newDirectFloatBuffer(col);
-//    	
-//    	//generate buffer IDs
-//    	bufferIDs = new int[1];
-//    	gl.glGenBuffers(1, bufferIDs, 0);
-//    	
-//    	//bind buffer for use
-//    	gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, bufferIDs[0]);
-//    	gl.glBufferData(GL2.GL_ARRAY_BUFFER, pos.length * Float.BYTES + col.length * Float.BYTES,
-//    					null, GL2.GL_STATIC_DRAW);
-//    	
-//    	//load data into buffer, enable state, and tell where to find the data
-//    	gl.glBufferSubData(GL2.GL_ARRAY_BUFFER, 0, pos.length * Float.BYTES, posData);
-//		
-//    	gl.glBufferSubData(GL2.GL_ARRAY_BUFFER, pos.length * Float.BYTES, col.length * Float.BYTES, colData);
-//
-//	}
-	
-
 	
 	public void dispose(GL2 gl) {
 		gl.glDeleteBuffers(1, bufferIDs, 0);
@@ -166,56 +142,46 @@ public class Enemy {
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, vertexBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, normalID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, normalBuffer, GL2.GL_STATIC_DRAW);
-	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, textureID);
-	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, textureBuffer, GL2.GL_STATIC_DRAW);
+//	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, textureID);
+//	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, textureBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
 	
     }
 	
-	public void draw(GL2 gl) {
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
-		gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-		gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-		
-		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalID);
-		gl.glEnableClientState(GL2.GL_NORMAL_ARRAY);
-		gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-		
-		
-//		gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
-//	    int vertexPositionID = gl.glGetAttribLocation(shaderProgram, "vertexPosition");
-//	    gl.glEnableVertexAttribArray(vertexPositionID);
-//	    gl.glVertexAttribPointer(vertexPositionID, 3, GL.GL_FLOAT, false, 0, 0);
-//	    
-//	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalID);
-//	    int vertexNormalID = gl.glGetAttribLocation(shaderProgram, "vertexNormals");
-//	    gl.glEnableVertexAttribArray(vertexNormalID);
-//	    gl.glVertexAttribPointer(vertexNormalID, 3, GL.GL_FLOAT, false, 0, 0);
-//	    
-//	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureVboId);
-//	    int vertexTextureID = gl.glGetAttribLocation(shaderProgram, "vertexTextures");
-//	    gl.glEnableVertexAttribArray(vertexTextureID);
-//	    gl.glVertexAttribPointer(vertexTextureID, 2, GL.GL_FLOAT, false, 0, 0);
+	/**
+	 * Draws a sphere using quad strip
+	 * Code sourced from "http://math.hws.edu/graphicsbook/source/jogl/ColorCubeOfSpheres.java"
+	 * @param gl
+	 */
+	public void drawSphere(GL2 gl) {
+		int slices = 32;
+	    int stacks = 16;
+	    int vertices = (slices+1)*2;
+	    for (int i = 0; i < stacks; i++) {
+	      int pos = i*(slices+1)*2;
+	      gl.glDrawArrays(GL2.GL_QUAD_STRIP, pos, vertices);
+	    }
 	}
 	
-//	public void draw(GL2 gl) {
-//  System.out.println("draw");
-//	//bind buffer for use
-//	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, bufferIDs[0]);
-//	gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-//	gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
-//	gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-//	gl.glColorPointer(3, GL.GL_FLOAT, 0, pos.length * Float.BYTES);
-//	
-//	gl.glDrawArrays(GL2.GL_TRIANGLES, 0, 3);
-//	
-//	gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
-//	
-//	//disable state, good practice
-//	gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
-//	gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
-//	//unbind buffers, good practice
-//	gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
-//}
+	public void draw(GL2 gl, int shaderProgram) {
+		gl.glPushMatrix();
+		
+			gl.glUseProgram(shaderProgram);
+		
+			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
+		    int vertexPositionID = gl.glGetAttribLocation(shaderProgram, "vertexPosition");
+		    gl.glEnableVertexAttribArray(vertexPositionID);
+		    gl.glVertexAttribPointer(vertexPositionID, 3, GL.GL_FLOAT, false, 0, 0);
+		    
+		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalID);
+		    int vertexNormalID = gl.glGetAttribLocation(shaderProgram, "vertexNormals");
+		    gl.glEnableVertexAttribArray(vertexNormalID);
+		    gl.glVertexAttribPointer(vertexNormalID, 3, GL.GL_FLOAT, false, 0, 0);
+		    
+		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureID);
+		    int vertexTextureID = gl.glGetAttribLocation(shaderProgram, "vertexTextures");
+		    gl.glEnableVertexAttribArray(vertexTextureID);
+		    gl.glVertexAttribPointer(vertexTextureID, 2, GL.GL_FLOAT, false, 0, 0);   
+	}
 	
 }

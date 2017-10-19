@@ -29,7 +29,7 @@ import com.jogamp.opengl.util.texture.TextureIO;
  *
  * @author malcolmr
  */
-public class Game extends JFrame implements GLEventListener, KeyListener {
+public class Game extends JFrame implements GLEventListener {
 
     private Game game;
     private Terrain myTerrain;
@@ -38,8 +38,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private Enemy enemy;
     private Camera camera;
     //private TriangleVBO triangle;
+
+    private int shaderProgram;
+    private static final String VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
+    private static final String FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
+
     private TexturePack texturePack;
-	    
+
     public Game(Terrain terrain) {
         super("Assignment 2");
         myTerrain = terrain;
@@ -63,7 +68,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         GLCapabilities caps = new GLCapabilities(glp);
         GLJPanel panel = new GLJPanel();
         panel.addGLEventListener(this);
-        panel.addKeyListener(this);
+        panel.addKeyListener(avatar);
 
         // Add an animator to call 'display' at 60fps
         FPSAnimator animator = new FPSAnimator(60);
@@ -74,10 +79,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         setSize(800, 600);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
-        //this doesnt work!
-//        InputKeyListener keyListener = new InputKeyListener();
-//        panel.addKeyListener(keyListener);
+
     }
 
     /**
@@ -108,11 +110,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         setupSun(gl);
 
         if (avatar.getThirdPerson()) avatar.draw(gl);
-        avatar.update();
         //for (Enemy enemy: enemies) {
         //}
 
-        enemy.draw(gl);
+        //enemy.draw(gl);
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
         //triangle.display(drawable);
     }
@@ -154,11 +155,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         // turn on a light such as this default light.
         // gl.glEnable(GL2.GL_LIGHT0);
  		
- 		camera.initCamera(gl);
- 		//for (Enemy enemy: enemies) {
- 		enemy.init(gl);
- 		//}
- 		//triangle.init(drawable);
+        try {
+	   		shaderProgram = Shader.initShaders(gl,VERTEX_SHADER,FRAGMENT_SHADER);
+	        }
+	        catch (Exception e) {
+	            e.printStackTrace();
+	            System.exit(1);
+	        }
     }
 
     @Override
@@ -172,67 +175,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
         GLU glu = new GLU();
 
-        glu.gluPerspective(60, (float)width/(float)height, 1, 20);
-    }
-    
-    @Override
-    public void keyPressed(KeyEvent e) {
-        // TODO Auto-generated method stub
-    	double avatarX = avatar.getX();
-    	double avatarZ = avatar.getZ();
-    	double avatarRotation = avatar.getRotation();
-    	double avatarSpeed = avatar.getSpeed();
-    	double rotationStep = avatar.getRotationStep();
-    	
-        switch (e.getKeyCode()) {
-
-        	//UP, DOWN is camera translation
-            case KeyEvent.VK_UP: {
-                double x = Math.cos(Math.toRadians(avatarRotation)) * avatarSpeed + avatarX;
-                double z = Math.sin(Math.toRadians(avatarRotation)) * avatarSpeed + avatarZ;
-                avatar.setX(x);
-                avatar.setZ(z);
-                break;
-            }
-            case KeyEvent.VK_DOWN: {
-            	double x = avatarX - Math.cos(Math.toRadians(avatarRotation)) * avatarSpeed;
-                double z = avatarZ - Math.sin(Math.toRadians(avatarRotation)) * avatarSpeed;
-                avatar.setX(x);
-                avatar.setZ(z);
-            	break;
-            }
-            //LEFT RIGHT is camera rotation
-            case KeyEvent.VK_LEFT: {
-            	double newRotation = avatarRotation - rotationStep;
-            	avatar.setRotation(newRotation);
-            	if (newRotation < 0) avatar.setRotation(360);
-                break;
-            }
-            case KeyEvent.VK_RIGHT: {
-            	double newRotation = avatarRotation + rotationStep;
-            	avatar.setRotation(newRotation);
-            	if (newRotation > 360) avatar.setRotation(0);
-            	break;
-            }
-            case KeyEvent.VK_T: {
-            	avatar.setThirdPerson();
-            }
-            default:
-                break;
-        }
-    }
-    
-
-    @Override
-    public void keyReleased(KeyEvent arg0) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void keyTyped(KeyEvent arg0) {
-        // TODO Auto-generated method stub
-
+        glu.gluPerspective(60, (float)width/(float)height, 0.01, 20);
     }
 
     private void setupSun(GL2 gl) {
@@ -263,4 +206,5 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
         gl.glPopMatrix();
     }
+
 }
