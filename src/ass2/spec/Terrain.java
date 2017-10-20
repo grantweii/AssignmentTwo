@@ -130,7 +130,7 @@ public class Terrain {
         // since the point lies directly on a grid point
         // This avoids having denominators that are 0 later on
         if ((x == Math.floor(x)) && !Double.isInfinite(x) && (z == Math.floor(z)) && !Double.isInfinite(z)) {
-            System.out.println(getGridAltitude((int) x, (int) z));
+//            System.out.println(getGridAltitude((int) x, (int) z));
             return getGridAltitude((int) x, (int) z);
         }
 
@@ -234,7 +234,6 @@ public class Terrain {
         // Increment through each square and draw the left and right triangles
         for (int z = 0; z < this.size().height - 1; z++) {
             for (int x = 0; x < this.size().width - 1; x++) {
-
                 // Points of Left Triangle
                 double[] v1 = {x, getGridAltitude(x, z), z};
                 double[] v2 = {x, getGridAltitude(x, z + 1), z + 1};

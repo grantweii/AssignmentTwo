@@ -18,32 +18,32 @@ public class Enemy {
 	private float x;
 	private float y;
 	private float z;
-	private float[] normals;
-	private float[] colours;
-	private float[] textures;
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer colourBuffer;
-	private FloatBuffer normalBuffer;
 	private FloatBuffer textureBuffer;
 	private float[] vertexArray;
 	private float[] colourArray;
-	private float[] normalArray;
 	private float[] textureArray;
 	private int vertexID;
 	private int colourID;
-	private int normalID;
 	private int textureID;
 	
 	private int texUnitPos;
 	private MyTexture myTexture;
 	
 	
-	public Enemy(Terrain terrain, float x, float z) {
+	public Enemy(Terrain terrain) {
 		this.terrain = terrain;
-		this.x = x;
-		this.z = z;
-		this.y = Float.parseFloat(String.valueOf(terrain.altitude(x, z))) + 0.3f;
+
 		this.initialised = false;
+		spawnCoords();
+	}
+	
+	public void spawnCoords() {
+		Random rand = new Random();
+		x = rand.nextFloat() * (terrain.size().width - 1);
+		z = rand.nextFloat() * (terrain.size().height - 1);
+		y = (float) (terrain.altitude(x, z) + 0.2);
 	}
 	
 	public void dispose(GL2 gl) {
@@ -73,12 +73,10 @@ public class Enemy {
 	    
     	vertexBuffer = Buffers.newDirectFloatBuffer(size);
     	colourBuffer = Buffers.newDirectFloatBuffer(size);
-//    	normalBuffer = Buffers.newDirectFloatBuffer(size);
     	textureBuffer = Buffers.newDirectFloatBuffer(size);
     	
     	vertexArray = new float[size];
     	colourArray = new float[size];
-//    	normalArray = new float[size];
     	textureArray = new float[size];
     	
     	//initialise sphere positions to put into buffer array
@@ -101,22 +99,15 @@ public class Enemy {
     	        double y2 = sinLong * cosLat2;
     	        double z2 = sinLat2;
     			
-    			//should it be x2 or x1 first?
     	        vertexBuffer.put((float) (radius*x2));
     			vertexBuffer.put((float) (radius*y2));
     			vertexBuffer.put((float) (radius*z2));
-//    	        normalBuffer.put((float) x2);
-//    			normalBuffer.put((float) y2);
-//    			normalBuffer.put((float) z2);
     			textureBuffer.put(((float) j)/slices);
     			textureBuffer.put(((float) (i+1))/stacks);
     			
     			vertexBuffer.put((float) (radius*x1));
     			vertexBuffer.put((float) (radius*y1));
     			vertexBuffer.put((float) (radius*z1));
-//    			normalBuffer.put((float) x1);
-//    			normalBuffer.put((float) y1);
-//    			normalBuffer.put((float) z1);
     			textureBuffer.put(((float) j)/slices);
     			textureBuffer.put(((float) i)/stacks);
     			
@@ -128,7 +119,6 @@ public class Enemy {
     	//randomise the colours     	
 		for (int i = 0; i < size; i++) {
 		      vertexArray[i] = vertexBuffer.get(i);
-//		      normalArray[i] = normalBuffer.get(i);
 		      textureArray[i] = textureBuffer.get(i);
 		      
 		      colourBuffer.put(rand.nextFloat());
@@ -137,22 +127,18 @@ public class Enemy {
 		    
 	    vertexBuffer.rewind();
 	    colourBuffer.rewind();
-//	    normalBuffer.rewind();
 	    textureBuffer.rewind();
 	    
 	    int[] bufferIDs = new int[3];
 	    gl.glGenBuffers(3, bufferIDs, 0);
 	    vertexID = bufferIDs[0];
 	    colourID = bufferIDs[1];
-//	    normalID = bufferIDs[1];
 	    textureID = bufferIDs[2];	    
 	    
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, vertexBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, colourID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, colourBuffer, GL2.GL_STATIC_DRAW);
-//	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, normalID);
-//	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, normalBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, textureID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, textureBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);

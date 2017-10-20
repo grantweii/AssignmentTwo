@@ -3,20 +3,17 @@ package ass2.spec;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.Random;
 
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.glu.GLU;
-import com.jogamp.opengl.glu.GLUquadric;
-import com.jogamp.opengl.util.gl2.GLUT;
-import com.jogamp.opengl.util.texture.Texture;
 
 public class Avatar implements KeyListener {
 	
 	private boolean thirdPerson;
 	private Terrain terrain;
-	private double x = 1;
-	private double y = 0.3;
-	private double z = 4;
+	private float x;
+	private float y;
+	private float z;
 	private double myRotation = 300;
 	private double rotationStep = 2;
 	private double speed = 0.1;
@@ -27,6 +24,14 @@ public class Avatar implements KeyListener {
 		this.terrain = terrain;
 		this.thirdPerson = false;
 		initialised = false;
+		spawnCoords();
+	}
+	
+	public void spawnCoords() {
+		Random rand = new Random();
+		x = rand.nextFloat() * (terrain.size().width - 1);
+		z = rand.nextFloat() * (terrain.size().height - 1);
+		y = (float) (terrain.altitude(x, z) + 0.2);
 	}
 	
 	public void draw(GL2 gl) {
@@ -34,7 +39,7 @@ public class Avatar implements KeyListener {
 		if (!initialised) {
 			init(gl);
 		}
-				
+		
 		gl.glPushMatrix();			
 	        	        
 	        gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
@@ -136,19 +141,23 @@ public class Avatar implements KeyListener {
 	}
 	
 	public void moveForward() {
-		double dx = Math.cos(Math.toRadians(myRotation)) * speed + x;
-        double dz = Math.sin(Math.toRadians(myRotation)) * speed + z;
-        x = dx;
-        z = dz;
-        y = terrain.altitude(x, z) + 0.3;
+		float dx = (float) (Math.cos(Math.toRadians(myRotation)) * speed + x);
+        float dz = (float) (Math.sin(Math.toRadians(myRotation)) * speed + z);
+        if (dx < (terrain.size().width - 1) && dz < (terrain.size().height - 1) && dx > 0 && dz > 0) {
+	        x = dx;
+	        z = dz;
+	        y = (float) (terrain.altitude(x, z) + 0.2);
+        }
 	}
 	
 	public void moveBackward() {
-		double dx = x - Math.cos(Math.toRadians(myRotation)) * speed;
-        double dz = z - Math.sin(Math.toRadians(myRotation)) * speed;
-        x = dx;
-        z = dz;
-        y = terrain.altitude(x, z) + 0.3;
+		float dx = (float) (x - Math.cos(Math.toRadians(myRotation)) * speed);
+        float dz = (float) (z - Math.sin(Math.toRadians(myRotation)) * speed);
+        if (dx < (terrain.size().width - 1) && (dz < terrain.size().height - 1) && dx > 0 && dz > 0) {
+	        x = dx;
+	        z = dz;
+	        y = (float) (terrain.altitude(x, z) + 0.2);
+        }
 	}
 	
 	public void turnRight() {
@@ -189,15 +198,15 @@ public class Avatar implements KeyListener {
 		return this.thirdPerson;
 	}
 	
-	public void setX(double newX) {
+	public void setX(float newX) {
 		x = newX;
 	}
 	
-	public void setY(double newY) {
+	public void setY(float newY) {
 		y = newY;
 	}
 	
-	public void setZ(double newZ) {
+	public void setZ(float newZ) {
 		z = newZ;
 	}
 	

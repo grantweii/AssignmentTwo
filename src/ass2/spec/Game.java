@@ -5,12 +5,9 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-<<<<<<< HEAD
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Random;
-=======
->>>>>>> 88484cb9ae74f6753d02e128af96ffd03c1f5de9
 
 import javax.swing.JFrame;
 
@@ -77,12 +74,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     }
 
     private void initEnemies(Terrain terrain) {
-    	for (int i = 0; i < 2; i++) {
-    		float x = rand.nextFloat();
-    		float z = rand.nextFloat();
-    					
-			Enemy e = new Enemy(terrain, x, z);
-			
+    	for (int i = 0; i < 3; i++) {
+			Enemy e = new Enemy(terrain);
 			enemies.add(e);
     	}
 	}
@@ -166,8 +159,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
             sunColFactor = 0.0001f;
             sunPosFactor = -0.4999f;
         }
-        System.out.println(sunPosFactor);
-        System.out.println(sunForward);
+//        System.out.println(sunPosFactor);
+//        System.out.println(sunForward);
     }
     
   
@@ -193,7 +186,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
             texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
             texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
         } catch (IOException e) {
-            System.out.println("here");
             e.printStackTrace();
         }
         gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
