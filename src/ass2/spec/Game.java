@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+import java.util.Random;
 
 import javax.swing.JFrame;
 
@@ -33,15 +34,20 @@ public class Game extends JFrame implements GLEventListener {
     private Game game;
     private Terrain myTerrain;
     private Avatar avatar;
-    //private ArrayList<Enemy> enemies;
-    private Enemy enemy;
+    private ArrayList<Enemy> enemies;
+    //private Enemy enemy;
     private Camera camera;
     //private TriangleVBO triangle;
     private TexturePack texturePack;
+    
+    Random rand;
 
-    private int shaderProgram;
-    private static final String VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
-    private static final String FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
+    private int PassthroughShader;
+    private int TextureShader;
+    private static final String PASSTHROUGH_VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
+    private static final String PASSTHROUGH_FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
+    private static final String VERTEX_TEX_SHADER = "src/ass2/spec/VertexTex.glsl";
+    private static final String FRAGMENT_TEX_SHADER = "src/ass2/spec/FragmentTex.glsl";
 
     // Sunlight variables
     private float sunColFactor = 0;
@@ -59,14 +65,24 @@ public class Game extends JFrame implements GLEventListener {
         game = this;
  		avatar = new Avatar(myTerrain);
  		camera = new Camera(avatar);
-    	//this.enemies = new ArrayList<Enemy>();
- 		//initEnemies(terrain);
- 		enemy = new Enemy(terrain, 2, 2);
- 		//triangle = new TriangleVBO();
+    	this.enemies = new ArrayList<Enemy>();
+        rand = new Random();
+ 		initEnemies(terrain);
         texturePack = new TexturePack();
     }
 
-    /**
+    private void initEnemies(Terrain terrain) {
+    	for (int i = 0; i < 2; i++) {
+    		float x = rand.nextFloat();
+    		float z = rand.nextFloat();
+    					
+			Enemy e = new Enemy(terrain, x, z);
+			
+			enemies.add(e);
+    	}
+	}
+
+	/**
      * Run the game.
      *
      */
@@ -118,9 +134,10 @@ public class Game extends JFrame implements GLEventListener {
 
         if (avatar.getThirdPerson()) avatar.draw(gl);
         
-        enemy.draw(gl,shaderProgram);
+        for (Enemy enemy: enemies) {
+        	enemy.draw(gl,TextureShader);
+        }
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
-        //triangle.display(drawable);
 
         // Change sunlight factors so that the position of the sun and its colour shift
         if (sunForward) {
@@ -148,7 +165,6 @@ public class Game extends JFrame implements GLEventListener {
     @Override
     public void dispose(GLAutoDrawable drawable) {
         GL2 gl = drawable.getGL().getGL2();
-        //enemy.dispose(gl);
     }
   
     @Override
@@ -165,6 +181,7 @@ public class Game extends JFrame implements GLEventListener {
         try {
             texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
             texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
+            texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
         } catch (IOException e) {
             System.out.println("here");
             e.printStackTrace();
@@ -178,7 +195,8 @@ public class Game extends JFrame implements GLEventListener {
         // gl.glEnable(GL2.GL_LIGHT0);
  		
         try {
-	   		shaderProgram = Shader.initShaders(gl,VERTEX_SHADER,FRAGMENT_SHADER);
+	   		PassthroughShader = Shader.initShaders(gl,PASSTHROUGH_VERTEX_SHADER,PASSTHROUGH_FRAGMENT_SHADER);
+	   		TextureShader = Shader.initShaders(gl, VERTEX_TEX_SHADER, FRAGMENT_TEX_SHADER);
 	        }
 	        catch (Exception e) {
 	            e.printStackTrace();

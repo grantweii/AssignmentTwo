@@ -9,6 +9,9 @@ public class TexturePack {
 
     private Texture terrain;
     private Texture road;
+    private Texture avatar;
+    private Texture enemy;
+    private Texture portal;
 
     public Texture getTerrain() {
         return terrain;
@@ -21,8 +24,24 @@ public class TexturePack {
     public Texture getRoad() {
         return road;
     }
+    
+    public Texture getAvatar() {
+    	return avatar;
+    }
 
     public void setRoad(Texture road) {
         this.road = road;
+    }
+    
+    public void setAvatar(Texture avatar) {
+    	this.avatar = avatar;
+    }
+    
+    public void setEnemy(Texture enemy) {
+    	this.enemy = enemy;
+    }
+    
+    public void setPortal(Texture portal) {
+    	this.portal = portal;
     }
 }
