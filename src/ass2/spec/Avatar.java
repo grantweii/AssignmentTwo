@@ -17,8 +17,8 @@ public class Avatar implements KeyListener {
 	private double x = 1;
 	private double y = 0.3;
 	private double z = 4;
-	private double myRotation = 300;
-	private double rotationStep = 2;
+	private double myRotation = 450;
+	private double rotationStep = 4;
 	private double speed = 0.1;
 	
 	public Avatar(Terrain terrain) {
@@ -33,7 +33,7 @@ public class Avatar implements KeyListener {
 		gl.glPushAttrib(GL2.GL_LIGHTING);
 	
 			//materials
-			float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
+			float[] ambient = {0.4f, 0.4f, 0.4f, 1.0f};
 	        float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
 	        float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
 	        
@@ -62,7 +62,7 @@ public class Avatar implements KeyListener {
         double dz = Math.sin(Math.toRadians(myRotation)) * speed + z;
         x = dx;
         z = dz;
-        y = terrain.altitude(x, z) + 0.3;
+        y = terrain.altitude(x, z) + 0.15;
 	}
 	
 	public void moveBackward() {
@@ -70,7 +70,7 @@ public class Avatar implements KeyListener {
         double dz = z - Math.sin(Math.toRadians(myRotation)) * speed;
         x = dx;
         z = dz;
-        y = terrain.altitude(x, z) + 0.3;
+        y = terrain.altitude(x, z) + 0.15;
 	}
 	
 	public void turnRight() {
