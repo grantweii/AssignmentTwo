@@ -57,12 +57,12 @@ public class Avatar implements KeyListener {
 		if (!initialised) {
 			init(gl);
 		}
-		
+
 		//enters 1st portal
 		if (enterPortal() == 1) {
 			float[] secondPortalCoords = portals.getSecondPortalCoords();
 			float[] secondPortalBounds = portals.getSecondPortalBounds();
-			
+
 			//get middle of second portal x value
 			float midX = ((secondPortalBounds[0] + secondPortalBounds[1]) / 2);
 			x = midX;
@@ -73,12 +73,12 @@ public class Avatar implements KeyListener {
 
 			//2nd portal rotation
 			setRotation(270);
-			
+
 		//enters 2nd portal
 		} else if (enterPortal() == 2) {
 			float[] firstPortalCoords = portals.getFirstPortalCoords();
 			float[] firstPortalBounds = portals.getFirstPortalBounds();
-			
+
 			//get middle of second portal x value
 			float midX = ((firstPortalBounds[0] + firstPortalBounds[1]) / 2);
 			x = midX;
@@ -86,19 +86,19 @@ public class Avatar implements KeyListener {
 			z = firstPortalCoords[2];
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-			
+
 			setRotation(90);
 		}
 		
-		gl.glPushMatrix();			
-	        	        
+		gl.glPushMatrix();
+
 	        gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
 	        gl.glTranslated(x, y, z);
 	        gl.glRotated(-myRotation, 0, 1, 0);
 	        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 	    	drawSphere(gl);
 	    	gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-		
+
 		gl.glPopMatrix();
 		
 				
@@ -187,7 +187,7 @@ public class Avatar implements KeyListener {
         
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		myTexture = new MyTexture(gl,"resources/textures/world.jpg","jpg",true);
-		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
+//		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 	}
 	
 	public void moveForward() {
