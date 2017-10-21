@@ -1,13 +1,12 @@
 package ass2.spec;
 
 import javax.swing.JFrame;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
+
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -19,7 +18,6 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.texture.TextureIO;
 
-// TODO: Change around sun mode and night mode code
 /**
  * COMMENT: Comment Game
  *
@@ -173,21 +171,13 @@ public class Game extends JFrame implements GLEventListener{
         // Enable 2D textures
         // Try to load textures from the resources folder
         gl.glEnable(GL2.GL_TEXTURE_2D);
-        try {
-            texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
-            texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
-            texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
-            texturePack.setPortal(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/portal.png"), true, TextureIO.JPG));
-        } catch (IOException e) {
-            // Texture file does not exist
-            e.printStackTrace();
-        }
+        texturePack.load();
 
         // Generate mip maps for each texture
         gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
         gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
 
-        // Try to load textures
+        // Try to load shaders
         try {
 	   		PassthroughShader = Shader.initShaders(gl,PASSTHROUGH_VERTEX_SHADER,PASSTHROUGH_FRAGMENT_SHADER);
 	   		TextureShader = Shader.initShaders(gl, VERTEX_TEX_SHADER, FRAGMENT_TEX_SHADER);
