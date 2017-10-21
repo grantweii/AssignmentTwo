@@ -56,6 +56,7 @@ public class Avatar implements KeyListener {
 		
 		if (!initialised) {
 			init(gl);
+			initialised = true;
 		}
 
 		//enters 1st portal
