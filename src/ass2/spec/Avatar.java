@@ -33,7 +33,7 @@ public class Avatar implements KeyListener {
 		Random rand = new Random();
 		x = rand.nextFloat() * (terrain.size().width - 1);
 		z = rand.nextFloat() * (terrain.size().height - 1);
-		y = (float) (terrain.altitude(x, z) + 0.2);
+		y = (float) (terrain.altitude(x, z) + 0.15);
 	}
 	
 	public int enterPortal() {
@@ -197,7 +197,7 @@ public class Avatar implements KeyListener {
         if (dx < (terrain.size().width - 1) && dz < (terrain.size().height - 1) && dx > 0 && dz > 0) {
 	        x = dx;
 	        z = dz;
-	        y = (float) (terrain.altitude(x, z) + 0.2);
+	        y = (float) (terrain.altitude(x, z) + 0.15);
         }
 	}
 	
@@ -207,7 +207,7 @@ public class Avatar implements KeyListener {
         if (dx < (terrain.size().width - 1) && (dz < terrain.size().height - 1) && dx > 0 && dz > 0) {
 	        x = dx;
 	        z = dz;
-	        y = (float) (terrain.altitude(x, z) + 0.2);
+	        y = (float) (terrain.altitude(x, z) + 0.15);
         }
 	}
 	

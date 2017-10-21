@@ -202,7 +202,7 @@ public class Terrain {
      *
      * @param gl
      */
-    public void draw(GL2 gl, Texture terrainTexture, Texture roadTexture) {
+    public void draw(GL2 gl, Texture terrainTexture, Texture roadTexture, Texture trunkTexture, Texture leaveTexture) {
 
         // Push the matrix and lighting
         gl.glPushMatrix();
@@ -281,7 +281,7 @@ public class Terrain {
         Iterator treeIt = this.trees().iterator();
         while (treeIt.hasNext()) {
             Tree currTree = (Tree) treeIt.next();
-            currTree.draw(gl);
+            currTree.draw(gl, trunkTexture, leaveTexture);
         }
 
         // Iterate over the list of roads and draw them

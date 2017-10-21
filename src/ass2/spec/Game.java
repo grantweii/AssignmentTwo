@@ -145,7 +145,7 @@ public class Game extends JFrame implements GLEventListener{
         }
 
         // Draw terrain
-        myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
+        myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad(), texturePack.getTrunk(), texturePack.getLeaves());
 
         // Draw portals
         portal.draw(gl, texturePack.getPortal());
