@@ -110,14 +110,13 @@ public class Terrain {
         myAltitude[x][z] = h;
     }
 
+    // TODO: Change this code around
     /**
      * Get the altitude at an arbitrary point.
      * Non-integer points should be interpolated from neighbouring grid points
-     * <p>
-     * TO BE COMPLETED
      *
-     * @param x
-     * @param z
+     * @param x the x coordinate
+     * @param z the z coordinate
      * @return
      */
     public double altitude(double x, double z) {
@@ -174,7 +173,6 @@ public class Terrain {
                 (diagonal - x)/(diagonal - x1)* calcBilinInterpZDir(z, z1, z2, x1, x2));
     }
 
-
     /**
      * Add a tree at the specified (x,z) point.
      * The tree's y coordinate is calculated from the altitude of the terrain at that point.
@@ -187,7 +185,6 @@ public class Terrain {
         Tree tree = new Tree(x, y, z);
         myTrees.add(tree);
     }
-
 
     /**
      * Add a road.
@@ -213,6 +210,7 @@ public class Terrain {
         // Set the polygon mode to fill
         gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
 
+        // Enable texture
         terrainTexture.enable(gl);
         terrainTexture.bind(gl);
 
@@ -224,8 +222,6 @@ public class Terrain {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
-
-        // TODO: Get the terrian textures
 
         // Turn on back face culling
         gl.glEnable(GL2.GL_CULL_FACE);
@@ -241,8 +237,6 @@ public class Terrain {
 
                 // Find the normal for the triangle
                 double[] faceNormL = MathUtil.getNormal(v1, v2, v3);
-
-                // TODO: Get the textures for the left triangle
 
                 // Draw Left Triangle
                 gl.glNormal3dv(faceNormL, 0);
@@ -265,8 +259,6 @@ public class Terrain {
                 // Find the normal for the triangle
                 double[] faceNormR = MathUtil.getNormal(v4, v5, v6);
 
-                // TODO: Get the textures for the right triangle
-
                 // Draw Right Triangle
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
@@ -281,8 +273,8 @@ public class Terrain {
                 }
                 gl.glEnd();
             }
-
         }
+        // Disable the terrain texture as we will now apply textures to roads and trees
         terrainTexture.disable(gl);
 
         // Iterate over the list of trees and draw them

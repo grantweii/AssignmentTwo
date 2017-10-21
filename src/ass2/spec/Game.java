@@ -1,16 +1,13 @@
 package ass2.spec;
 
+import javax.swing.JFrame;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Random;
-
-import javax.swing.JFrame;
-
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -22,6 +19,7 @@ import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
 import com.jogamp.opengl.util.texture.TextureIO;
 
+// TODO: Change around sun mode and night mode code
 /**
  * COMMENT: Comment Game
  *
@@ -29,18 +27,19 @@ import com.jogamp.opengl.util.texture.TextureIO;
  */
 public class Game extends JFrame implements GLEventListener, KeyListener {
 
+    // Main objects
     private Game game;
     private Terrain myTerrain;
     private Avatar avatar;
     private ArrayList<Enemy> enemies;
-    //private Enemy enemy;
     private Camera camera;
-    //private TriangleVBO triangle;
     private TexturePack texturePack;
     private PortalPair portal;
-    
+
+    // TODO: Name this
     Random rand;
 
+    // Shader variables
     private int PassthroughShader;
     private int TextureShader;
     private static final String PASSTHROUGH_VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
@@ -48,20 +47,24 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private static final String VERTEX_TEX_SHADER = "src/ass2/spec/VertexTex.glsl";
     private static final String FRAGMENT_TEX_SHADER = "src/ass2/spec/FragmentTex.glsl";
 
-    // Sunlight variables
+    // Day mode variables
     private float sunColFactor = 0;
     private float sunPosFactor = -0.4999f;
     private boolean sunForward = true;
-    private float[] blueSunColor = {0.251f,0.612f,1f};
     private float[] earlySunColor = {0.623f,0.594f,0.58035f};
     private float[] lateSunColor = {1f,0.576f,0.161f};
     private float[] earlySkyColor = {0.529411f, 0.807843f, 0.980392f};
     private float[] lateSkyColor = {0.976f, 0.820f, 0.522f};
 
-    // Night mode
+    // Night mode variables
     private boolean isNight = false;
     private boolean isTorchOn = true;
 
+    /**
+     * Constructor
+     *
+     * @param terrain terrain of the game
+     */
     public Game(Terrain terrain) {
         super("Assignment 2");
         game = this;
@@ -69,18 +72,12 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
  		portal = new PortalPair(terrain);
  		avatar = new Avatar(myTerrain, portal);
  		camera = new Camera(avatar);
-    	this.enemies = new ArrayList<Enemy>();
+ 		// TODO: Once enemies is part of the terrain file we should not need to initialise it here
+    	enemies = new ArrayList<Enemy>();
+        initEnemies(terrain);
         rand = new Random();
- 		initEnemies(terrain);
         texturePack = new TexturePack();
     }
-
-    private void initEnemies(Terrain terrain) {
-    	for (int i = 0; i < 3; i++) {
-			Enemy e = new Enemy(terrain);
-			enemies.add(e);
-    	}
-	}
 
 	/**
      * Run the game.
@@ -91,7 +88,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         GLCapabilities caps = new GLCapabilities(glp);
         GLJPanel panel = new GLJPanel();
         panel.addGLEventListener(this);
+
+        // Add avatar and game as key listeners
+        // Avatar listens for movement keys and first/third person
         panel.addKeyListener(avatar);
+        // Game listens for day/night mode and torch keys
         panel.addKeyListener(game);
 
         // Add an animator to call 'display' at 60fps
@@ -99,11 +100,11 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         animator.add(panel);
         animator.start();
 
+        // JFrame set up
         getContentPane().add(panel);
         setSize(800, 600);
         setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        
     }
 
     /**
@@ -120,9 +121,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
     @Override
     public void display(GLAutoDrawable drawable) {
-        // TODO Auto-generated method stub
         GL2 gl = drawable.getGL().getGL2();
 
+        // Setup the matrix mode and buffers
         gl.glMatrixMode(GL2.GL_MODELVIEW);
         gl.glLoadIdentity();
         gl.glClear(GL.GL_COLOR_BUFFER_BIT | GL2.GL_DEPTH_BUFFER_BIT);
@@ -136,14 +137,96 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         } else {
             setupNight(gl);
         }
-        
+
+        // TODO: Move this check to avatar
+        // If we are in third person than draw the avatar
         if (avatar.getThirdPerson()) avatar.draw(gl);
 
+        // TODO: Implement an avatar method which returns its coordinates
+        // Draw enemies
         float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
         for (Enemy enemy: enemies) {
         	enemy.draw(gl,TextureShader,isNight,torchCoordinates);
         }
+
+        // Draw terrain
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
+
+        // Draw portals
+        portal.draw(gl, texturePack.getPortal());
+    }
+
+    @Override
+    public void dispose(GLAutoDrawable drawable) {
+        GL2 gl = drawable.getGL().getGL2();
+    }
+  
+    @Override
+    public void init(GLAutoDrawable drawable) {
+
+        GL2 gl = drawable.getGL().getGL2();
+
+        // Enable depth testing and normalizing
+        gl.glEnable(GL2.GL_DEPTH_TEST);
+        gl.glEnable(GL2.GL_NORMALIZE);
+
+        // By enabling lighting, color is worked out differently.
+        gl.glEnable(GL2.GL_LIGHTING);
+
+        // Enable 2D textures
+        // Try to load textures from the resources folder
+        gl.glEnable(GL2.GL_TEXTURE_2D);
+        try {
+            texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
+            texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
+            texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
+            texturePack.setPortal(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/portal.png"), true, TextureIO.JPG));
+        } catch (IOException e) {
+            // Texture file does not exist
+            e.printStackTrace();
+        }
+
+        // Generate mip maps for each texture
+        gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
+        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
+
+        // Try to load textures
+        try {
+	   		PassthroughShader = Shader.initShaders(gl,PASSTHROUGH_VERTEX_SHADER,PASSTHROUGH_FRAGMENT_SHADER);
+	   		TextureShader = Shader.initShaders(gl, VERTEX_TEX_SHADER, FRAGMENT_TEX_SHADER);
+        } catch (Exception e) {
+	            e.printStackTrace();
+	            System.exit(1);
+        }
+    }
+
+    @Override
+    public void reshape(GLAutoDrawable drawable, int x, int y, int width,
+                        int height) {
+
+        GL2 gl = drawable.getGL().getGL2();
+
+        // Set the matrix mode and load identity
+        gl.glMatrixMode(GL2.GL_PROJECTION);
+        gl.glLoadIdentity();
+
+        GLU glu = new GLU();
+
+        // Set the perspective
+        glu.gluPerspective(60, (float)width/(float)height, 0.1, 20);
+    }
+
+    private void initEnemies(Terrain terrain) {
+        for (int i = 0; i < 3; i++) {
+            Enemy e = new Enemy(terrain);
+            enemies.add(e);
+        }
+    }
+
+    // TODO: Possibly move all the sunlight code to its own class
+    // TODO: Get the sun's position to move in an arch, starting from below the horizon
+    private void setupDay(GL2 gl) {
+        gl.glPushMatrix();
 
         // Change sunlight factors so that the position of the sun and its colour shift
         if (sunForward) {
@@ -162,73 +245,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
             sunColFactor = 0.0001f;
             sunPosFactor = -0.4999f;
         }
-//        System.out.println(sunPosFactor);
-//        System.out.println(sunForward);
-        
-        portal.draw(gl, texturePack.getPortal());
-    }
-    
-  
 
-    @Override
-    public void dispose(GLAutoDrawable drawable) {
-        GL2 gl = drawable.getGL().getGL2();
-    }
-  
-    @Override
-    public void init(GLAutoDrawable drawable) {
-        // TODO Auto-generated method stub
-        GL2 gl = drawable.getGL().getGL2();
-
-        gl.glEnable(GL2.GL_DEPTH_TEST);
-        gl.glEnable(GL2.GL_NORMALIZE);
-        // By enabling lighting, color is worked out differently.
-        gl.glEnable(GL2.GL_LIGHTING);
-
-        gl.glEnable(GL2.GL_TEXTURE_2D);
-        try {
-            texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
-            texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
-            texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
-            texturePack.setPortal(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/portal.png"), true, TextureIO.JPG));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        gl.glGenerateMipmap(GL2.GL_TEXTURE_2D);
-        gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR);
-
-
-        // When you enable lighting you must still actually
-        // turn on a light such as this default light.
-        // gl.glEnable(GL2.GL_LIGHT0);
- 		
-        try {
-	   		PassthroughShader = Shader.initShaders(gl,PASSTHROUGH_VERTEX_SHADER,PASSTHROUGH_FRAGMENT_SHADER);
-	   		TextureShader = Shader.initShaders(gl, VERTEX_TEX_SHADER, FRAGMENT_TEX_SHADER);
-	        }
-	        catch (Exception e) {
-	            e.printStackTrace();
-	            System.exit(1);
-	        }
-    }
-
-    @Override
-    public void reshape(GLAutoDrawable drawable, int x, int y, int width,
-                        int height) {
-        // TODO Auto-generated method stub
-        GL2 gl = drawable.getGL().getGL2();
-
-        gl.glMatrixMode(GL2.GL_PROJECTION);
-        gl.glLoadIdentity();
-
-        GLU glu = new GLU();
-
-        glu.gluPerspective(60, (float)width/(float)height, 0.1, 20);
-    }
-
-    private void setupDay(GL2 gl) {
-        gl.glPushMatrix();
-
+        // Enable sun light source
         gl.glEnable(GL2.GL_LIGHT1);
 
         // Turn off torch
@@ -236,7 +254,6 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
         // Interpolate between the early and late sunlight colours using the
         // the sunColFactor
-
         float[] sunColor = {earlySunColor[0]*sunColFactor + lateSunColor[0]*(1-sunColFactor),
                             earlySunColor[1]*sunColFactor + lateSunColor[1]*(1-sunColFactor),
                             earlySunColor[2]*sunColFactor + lateSunColor[2]*(1-sunColFactor)};
@@ -246,23 +263,25 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
                             earlySkyColor[1]*sunColFactor + lateSkyColor[1]*(1-sunColFactor),
                             earlySkyColor[2]*sunColFactor + lateSkyColor[2]*(1-sunColFactor)};
 
-        //Background colour
-        gl.glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0f); //Sky Blue, RGB: 135-206-250
+        // Background colour
+        gl.glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0f);
 
-        //Global Ambient light
+        // Global Ambient light
         float[] globalAmb = {sunColor[0], sunColor[1], sunColor[2], 1f}; //full intensity
         gl.glLightModelfv(GL2.GL_LIGHT_MODEL_AMBIENT, globalAmb, 0);
 
-        //Sunlight (LIGHT1)
+        // Sunlight
         float[] sunlightVector = myTerrain.getSunlight();
         float[] finalSunlightVector = new float[4];
 
+        // Shift the sun's position using
         finalSunlightVector[0] = sunlightVector[0]+sunPosFactor;
         finalSunlightVector[1] = sunlightVector[1];
         finalSunlightVector[2] = sunlightVector[2]-sunPosFactor;
-        finalSunlightVector[3] = 0; // for directional light
+        finalSunlightVector[3] = 0; // Sunlight is directional light
 
-        float[] diffuseComponent = new float[]{sunColor[0], sunColor[1], sunColor[2], 0.1f}; //diffuse all light
+        // Diffuse component of sunlight
+        float[] diffuseComponent = new float[]{sunColor[0], sunColor[1], sunColor[2], 0.1f};
 
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuseComponent, 0);
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_POSITION, finalSunlightVector, 0);
@@ -271,7 +290,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     }
 
     private void setupNight(GL2 gl) {
+
         gl.glPushMatrix();
+
         // Enable moonlight, provides ambient light
         gl.glEnable(GL2.GL_LIGHT1);
 
@@ -288,8 +309,9 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         finalMoonlightVector[0] = moonlightVector[0]+sunPosFactor;
         finalMoonlightVector[1] = moonlightVector[1];
         finalMoonlightVector[2] = moonlightVector[2]-sunPosFactor;
-        finalMoonlightVector[3] = 0; // for directional light
+        finalMoonlightVector[3] = 0; // Moonlight is directional
 
+        // TODO: See if we need a diffuse component for the moonlight
         float[] diffuseComponent = new float[]{0.1f,0.1f,0.1f, 0.1f};
 
         gl.glLightfv(GL2.GL_LIGHT1, GL2.GL_DIFFUSE, diffuseComponent, 0);
@@ -311,13 +333,13 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         float[] torchPosition = {(float)avatar.getX(), (float)avatar.getY(), (float)avatar.getZ(), 1.0f};
         gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_POSITION, torchPosition, 0);
 
-        //Set torch direction (facing outwards from avatar)
+        // Set torch direction (facing outwards from avatar)
         float[] torchDirection = {(float)Math.cos(Math.toRadians(avatar.getRotation())), 0.0f, (float)Math.sin(Math.toRadians(avatar.getRotation()))};
-        gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_SPOT_DIRECTION, torchDirection, 0); //direction vector
+        gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_SPOT_DIRECTION, torchDirection, 0);
 
-        //Set cut off and attenuation
-        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_CUTOFF, 15.0f); //cutoff angle
-        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_EXPONENT, 0.0f); //attenuation
+        // Set cut off and attenuation
+        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_CUTOFF, 15.0f);
+        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_EXPONENT, 0.0f);
 
         gl.glPopMatrix();
     }
