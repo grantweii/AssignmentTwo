@@ -136,9 +136,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         }
 
         if (avatar.getThirdPerson()) avatar.draw(gl);
-        
+
+        float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
         for (Enemy enemy: enemies) {
-        	enemy.draw(gl,TextureShader);
+        	enemy.draw(gl,TextureShader,isNight,torchCoordinates);
         }
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad());
 

@@ -20,12 +20,15 @@ public class Enemy {
 	private float z;
 	private FloatBuffer vertexBuffer;
 	private FloatBuffer colourBuffer;
+	private FloatBuffer normalBuffer;
 	private FloatBuffer textureBuffer;
 	private float[] vertexArray;
 	private float[] colourArray;
+	private float[] normalArray;
 	private float[] textureArray;
 	private int vertexID;
 	private int colourID;
+	private int normalID;
 	private int textureID;
 	
 	private int texUnitPos;
@@ -73,10 +76,12 @@ public class Enemy {
 	    
     	vertexBuffer = Buffers.newDirectFloatBuffer(size);
     	colourBuffer = Buffers.newDirectFloatBuffer(size);
+    	normalBuffer = Buffers.newDirectFloatBuffer(size);
     	textureBuffer = Buffers.newDirectFloatBuffer(size);
     	
     	vertexArray = new float[size];
     	colourArray = new float[size];
+    	normalArray = new float[size];
     	textureArray = new float[size];
     	
     	//initialise sphere positions to put into buffer array
@@ -102,12 +107,18 @@ public class Enemy {
     	        vertexBuffer.put((float) (radius*x2));
     			vertexBuffer.put((float) (radius*y2));
     			vertexBuffer.put((float) (radius*z2));
+    			normalBuffer.put( (float)x2 );
+    	        normalBuffer.put( (float)y2 );
+    	        normalBuffer.put( (float)z2 );
     			textureBuffer.put(((float) j)/slices);
     			textureBuffer.put(((float) (i+1))/stacks);
     			
     			vertexBuffer.put((float) (radius*x1));
     			vertexBuffer.put((float) (radius*y1));
     			vertexBuffer.put((float) (radius*z1));
+    			normalBuffer.put( (float)x1 );
+    	        normalBuffer.put( (float)y1 );
+    	        normalBuffer.put( (float)z1 );
     			textureBuffer.put(((float) j)/slices);
     			textureBuffer.put(((float) i)/stacks);
     			
@@ -119,6 +130,7 @@ public class Enemy {
     	//randomise the colours     	
 		for (int i = 0; i < size; i++) {
 		      vertexArray[i] = vertexBuffer.get(i);
+		      normalArray[i] = normalBuffer.get(i);
 		      textureArray[i] = textureBuffer.get(i);
 		      
 		      colourBuffer.put(rand.nextFloat());
@@ -127,18 +139,22 @@ public class Enemy {
 		    
 	    vertexBuffer.rewind();
 	    colourBuffer.rewind();
+	    normalBuffer.rewind();
 	    textureBuffer.rewind();
 	    
-	    int[] bufferIDs = new int[3];
-	    gl.glGenBuffers(3, bufferIDs, 0);
+	    int[] bufferIDs = new int[4];
+	    gl.glGenBuffers(4, bufferIDs, 0);
 	    vertexID = bufferIDs[0];
 	    colourID = bufferIDs[1];
-	    textureID = bufferIDs[2];	    
+	    normalID = bufferIDs[2];
+	    textureID = bufferIDs[3];	    
 	    
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, vertexBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, colourID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, colourBuffer, GL2.GL_STATIC_DRAW);
+	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, normalID);
+	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, normalBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, textureID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, textureBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, 0);
@@ -161,12 +177,20 @@ public class Enemy {
 	    }
 	}
 	
-	public void draw(GL2 gl, int shaderProgram) {
+	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates) {
 		
 		if (!initialised) {
 			init(gl,shaderProgram);
 			initialised = true;
 		}
+		
+		float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
+		float[] diffuse = {1.0f, 1.0f, 1.0f, 1.0f};
+	    float[] specular = {0.2f, 0.2f, 0.2f, 1.0f};
+	    
+    	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
+    	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
+	    gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 		
 		gl.glPushMatrix();
 		
@@ -175,16 +199,47 @@ public class Enemy {
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
 			
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
-			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-			gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-			
+		    int vertexPositionID = gl.glGetAttribLocation(shaderProgram, "coordinates");
+		    gl.glEnableVertexAttribArray(vertexPositionID);
+		    gl.glVertexAttribPointer(vertexPositionID, 3, GL.GL_FLOAT, false, 0, 0);
+		    
 			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, colourID);
 			gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
 			gl.glColorPointer(3, GL.GL_FLOAT, 0, 0);
-						
-			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureID);
-			gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
+		    
+		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, normalID);
+		    int vertexNormalID = gl.glGetAttribLocation(shaderProgram, "normals");
+		    gl.glEnableVertexAttribArray(vertexNormalID);
+		    gl.glVertexAttribPointer(vertexNormalID, 3, GL.GL_FLOAT, false, 0, 0);
+		    
+		    gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureID);
+		    int vertexTextureID = gl.glGetAttribLocation(shaderProgram, "textures");
+		    gl.glEnableVertexAttribArray(vertexTextureID);
+		    gl.glVertexAttribPointer(vertexTextureID, 2, GL.GL_FLOAT, false, 0, 0);
+		    
+		    texUnitPos = gl.glGetUniformLocation(shaderProgram, "texUnit");
+		    gl.glActiveTexture(GL.GL_TEXTURE0);
+		    gl.glUniform1i(texUnitPos, 0); //0 for GL_TEXTURE0
+		    
+		    int sunID = gl.glGetUniformLocation(shaderProgram, "lightPosition");
+		    
+		    //If night mode, the sun is the position of the camera (spotlight)
+		    if (nightEnabled)
+		      gl.glUniform3fv(sunID, 1, torchCoordinates, 0);
+		    else
+		      gl.glUniform3fv(sunID, 1, terrain.getSunlight(), 0);
+			
+//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
+//			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
+//			gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
+//			
+//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, colourID);
+//			gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
+//			gl.glColorPointer(3, GL.GL_FLOAT, 0, 0);
+//						
+//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureID);
+//			gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
+//			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
 			
 			gl.glTranslated(x, y, z);
 			
@@ -197,6 +252,7 @@ public class Enemy {
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL2.GL_COLOR_ARRAY);
+		gl.glDisableClientState(GL2.GL_NORMAL_ARRAY);
 		gl.glDisableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
 
 		gl.glUseProgram(0);
