@@ -28,6 +28,10 @@ public class TexturePack {
     public Texture getAvatar() {
     	return avatar;
     }
+    
+    public Texture getPortal() {
+    	return portal;
+    }
 
     public void setRoad(Texture road) {
         this.road = road;
@@ -44,4 +48,5 @@ public class TexturePack {
     public void setPortal(Texture portal) {
     	this.portal = portal;
     }
+
 }

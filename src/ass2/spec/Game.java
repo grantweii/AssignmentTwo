@@ -37,6 +37,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
     private Camera camera;
     //private TriangleVBO triangle;
     private TexturePack texturePack;
+    private PortalPair portal;
     
     Random rand;
 
@@ -63,9 +64,10 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
 
     public Game(Terrain terrain) {
         super("Assignment 2");
-        myTerrain = terrain;
         game = this;
- 		avatar = new Avatar(myTerrain);
+        myTerrain = terrain;
+ 		portal = new PortalPair(terrain);
+ 		avatar = new Avatar(myTerrain, portal);
  		camera = new Camera(avatar);
     	this.enemies = new ArrayList<Enemy>();
         rand = new Random();
@@ -134,7 +136,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         } else {
             setupNight(gl);
         }
-
+        
         if (avatar.getThirdPerson()) avatar.draw(gl);
 
         float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
@@ -162,6 +164,8 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
         }
 //        System.out.println(sunPosFactor);
 //        System.out.println(sunForward);
+        
+        portal.draw(gl, texturePack.getPortal());
     }
     
   
@@ -186,6 +190,7 @@ public class Game extends JFrame implements GLEventListener, KeyListener {
             texturePack.setTerrain(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/grass.jpg"), true, TextureIO.JPG));
             texturePack.setRoad(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/rainbow.png"), true, TextureIO.PNG));
             texturePack.setAvatar(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/world.jpg"), true, TextureIO.JPG));
+            texturePack.setPortal(TextureIO.newTexture(this.getClass().getResourceAsStream("/textures/portal.png"), true, TextureIO.JPG));
         } catch (IOException e) {
             e.printStackTrace();
         }
