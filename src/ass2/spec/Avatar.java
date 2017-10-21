@@ -132,7 +132,7 @@ public class Avatar implements KeyListener {
         
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		myTexture = new MyTexture(gl,"resources/textures/world.jpg","jpg",true);
-		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
+		// gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 	}
 	
 	public void moveForward() {

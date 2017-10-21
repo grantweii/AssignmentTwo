@@ -5,12 +5,9 @@ import java.awt.event.KeyListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-<<<<<<< HEAD
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.Random;
-=======
->>>>>>> 88484cb9ae74f6753d02e128af96ffd03c1f5de9
 
 import javax.swing.JFrame;
 
