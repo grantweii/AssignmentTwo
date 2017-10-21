@@ -10,8 +10,6 @@ import com.jogamp.opengl.util.texture.Texture;
 
 public class Enemy {
 
-	private Terrain terrain;
-
 	private boolean initialised;
 
 	private int[] bufferIDs;
@@ -41,12 +39,12 @@ public class Enemy {
 		this.z = z;
 	}
 
-	public void spawnCoords() {
-		Random rand = new Random();
-		x = rand.nextFloat() * (terrain.size().width - 1);
-		z = rand.nextFloat() * (terrain.size().height - 1);
-		y = (float) (terrain.altitude(x, z) + 0.2);
-	}
+//	public void spawnCoords() {
+//		Random rand = new Random();
+//		x = rand.nextFloat() * (terrain.size().width - 1);
+//		z = rand.nextFloat() * (terrain.size().height - 1);
+//		y = (float) (terrain.altitude(x, z) + 0.2);
+//	}
 
 	public void dispose(GL2 gl) {
 		gl.glDeleteBuffers(3, bufferIDs, 0);
@@ -176,7 +174,7 @@ public class Enemy {
 	    }
 	}
 
-	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates) {
+	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates) {
 
 		if (!initialised) {
 			init(gl,shaderProgram);
@@ -223,10 +221,12 @@ public class Enemy {
 		    int sunID = gl.glGetUniformLocation(shaderProgram, "lightPosition");
 
 		    //If night mode, the sun is the position of the camera (spotlight)
-		    if (nightEnabled)
-		      gl.glUniform3fv(sunID, 1, torchCoordinates, 0);
-		    else
-		      gl.glUniform3fv(sunID, 1, terrain.getSunlight(), 0);
+		    if (nightEnabled) {
+		    	gl.glUniform3fv(sunID, 1, torchCoordinates, 0);
+		    } else {
+		    	//System.out.println(terrain.getSunlight().length);
+		    	gl.glUniform3fv(sunID, 1, sunCoordinates, 0);
+		    }
 
 //			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
 //			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);

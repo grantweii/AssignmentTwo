@@ -17,6 +17,9 @@ void main (void) {
 	    vec3 r = normalize(-reflect(l, n));  
 	    
 	    //Calculate ambient lighting
+	    //vec4 ambient =  gl_LightSource[0].ambient * gl_FrontMaterial.ambient;
+		//vec4 globalAmbient = gl_LightModel.ambient * gl_FrontMaterial.ambient;
+	
 	    vec4 l_ambient = gl_FrontMaterial.ambient;
 	    l_ambient = clamp(l_ambient, 0.0, 1.0);
 	     
@@ -32,7 +35,6 @@ void main (void) {
 	    //Final resulting light (ambient + diffuse + specular)
 	    totalLight = (l_ambient + l_diffuse + l_specular);
 	    totalLight = clamp(totalLight, 0.0, 1.0); 
-  	
   	
   	gl_FragColor = texture2D(texUnit, texCoordV) * totalLight;
     //gl_FragColor = texture2D(texUnit,texCoordV) * gl_Color;
