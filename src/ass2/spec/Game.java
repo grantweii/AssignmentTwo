@@ -3,7 +3,6 @@ package ass2.spec;
 import javax.swing.JFrame;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -16,7 +15,6 @@ import com.jogamp.opengl.GLProfile;
 import com.jogamp.opengl.awt.GLJPanel;
 import com.jogamp.opengl.glu.GLU;
 import com.jogamp.opengl.util.FPSAnimator;
-import com.jogamp.opengl.util.texture.TextureIO;
 
 /**
  * COMMENT: Comment Game
@@ -72,8 +70,8 @@ public class Game extends JFrame implements GLEventListener{
         lighting = new Lighting(myTerrain.getSunlight(), avatar);
  		camera = new Camera(avatar);
  		// TODO: Once enemies is part of the terrain file we should not need to initialise it here
-    	enemies = new ArrayList<Enemy>();
-        initEnemies(terrain);
+//    	enemies = new ArrayList<Enemy>();
+//        initEnemies(terrain);
         rand = new Random();
         texturePack = new TexturePack();
     }
@@ -142,9 +140,9 @@ public class Game extends JFrame implements GLEventListener{
         // TODO: Implement an avatar method which returns its coordinates
         // Draw enemies
         float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
-        for (Enemy enemy: enemies) {
-        	enemy.draw(gl,TextureShader,isNight,torchCoordinates);
-        }
+//        for (Enemy enemy: myTerrain.enemies()) {
+//        	enemy.draw(gl,TextureShader,isNight,torchCoordinates);
+//        }
 
         // Draw terrain
         myTerrain.draw(gl, texturePack.getTerrain(), texturePack.getRoad(), texturePack.getTrunk(), texturePack.getLeaves());
@@ -205,10 +203,10 @@ public class Game extends JFrame implements GLEventListener{
         glu.gluPerspective(60, (float)width/(float)height, 0.1, 20);
     }
 
-    private void initEnemies(Terrain terrain) {
+/*    private void initEnemies(Terrain terrain) {
         for (int i = 0; i < 3; i++) {
             Enemy e = new Enemy(terrain);
             enemies.add(e);
         }
-    }
+    }*/
 }

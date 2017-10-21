@@ -34,12 +34,11 @@ public class Enemy {
 	private int texUnitPos;
 	private MyTexture myTexture;
 
-
-	public Enemy(Terrain terrain) {
-		this.terrain = terrain;
-
+	public Enemy(float x, float y, float z) {
 		this.initialised = false;
-		spawnCoords();
+		this.x = x;
+		this.y = y;
+		this.z = z;
 	}
 
 	public void spawnCoords() {

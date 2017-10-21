@@ -20,6 +20,7 @@ public class Terrain {
     private List<Tree> myTrees;
     private List<Road> myRoads;
     private float[] mySunlight;
+    private List<Enemy> myEnemies;
 
     /**
      * Create a new terrain
@@ -33,6 +34,7 @@ public class Terrain {
         myTrees = new ArrayList<Tree>();
         myRoads = new ArrayList<Road>();
         mySunlight = new float[3];
+        myEnemies = new ArrayList<Enemy>();
     }
 
     public Terrain(Dimension size) {
@@ -49,6 +51,10 @@ public class Terrain {
 
     public List<Road> roads() {
         return myRoads;
+    }
+
+    public List<Enemy> enemies() {
+        return myEnemies;
     }
 
     public float[] getSunlight() {
@@ -197,6 +203,13 @@ public class Terrain {
         myRoads.add(road);
     }
 
+    public void addEnemy(double x, double z) {
+        float y = (float) altitude(x, z);
+        Enemy enemy = new Enemy((float) x, y, (float) z);
+        System.out.println(x);
+        myEnemies.add(enemy);
+    }
+
     /**
      * Draws the terrain
      *
@@ -295,6 +308,13 @@ public class Terrain {
             Road currRoad = (Road) roadIt.next();
             currRoad.draw(gl, roadTexture);
         }
+
+//        // Iterate over the list of trees and draw them
+//        Iterator enemyIt = this.enemies().iterator();
+//        while (enemyIt.hasNext()) {
+//            Enemy currEnemy = (Enemy) enemyIt.next();
+//            currEnemy.draw(gl, shaderProgram, nightEnabled, torchCoordinates);
+//        }
 
         // Set the polygon mode back to fill to avoid GPU glitch
         gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2.GL_FILL);
