@@ -93,6 +93,8 @@ public class Game extends JFrame implements GLEventListener{
         panel.addKeyListener(avatar);
         // Lighting listens for day/night mode and torch keys
         panel.addKeyListener(lighting);
+        // Portal pair listens for if it is enabled
+        panel.addKeyListener(portal);
 
         // Add an animator to call 'display' at 60fps
         FPSAnimator animator = new FPSAnimator(60);

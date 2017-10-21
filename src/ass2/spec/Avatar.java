@@ -72,9 +72,6 @@ public class Avatar implements KeyListener {
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
 
-			//2nd portal rotation
-			setRotation(270);
-
 		//enters 2nd portal
 		} else if (enterPortal() == 2) {
 			float[] firstPortalCoords = portals.getFirstPortalCoords();
@@ -87,8 +84,6 @@ public class Avatar implements KeyListener {
 			z = firstPortalCoords[2];
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-
-			setRotation(90);
 		}
 		
 		gl.glPushMatrix();
@@ -187,7 +182,7 @@ public class Avatar implements KeyListener {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
         
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-		myTexture = new MyTexture(gl,"resources/textures/world.jpg","jpg",true);
+		myTexture = new MyTexture(gl,"resources/textures/rock.jpg","jpg",true);
 //		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 	}
 	

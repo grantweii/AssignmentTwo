@@ -44,8 +44,8 @@ public class Tree {
         GLU glu = new GLU();
         {
             // Set trunk material
-            float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
-            float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
+            float[] ambient = {0.5f, 0.5f, 0.5f, 1.0f};
+            float[] diffuse = {0.5f, 0.5f, 0.5f, 1.0f};
             float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
 
             gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
@@ -72,31 +72,83 @@ public class Tree {
         gl.glPopMatrix();
 
         gl.glPushMatrix();
+
+        // Set trunk material
+        float[] ambient = {0.5f, 0.5f, 0.5f, 1.0f};
+        float[] diffuse = {0.5f, 0.5f, 0.5f, 1.0f};
+        float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
+
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
+        gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
+
+        //Get texture
+        leavesTexture.enable(gl);
+        leavesTexture.bind(gl);
+
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D,   GL2.GL_TEXTURE_WRAP_S,
+                GL2.GL_MIRRORED_REPEAT);
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+                GL2.GL_MIRRORED_REPEAT);
+
+        int slices = 6;
+        double width = 0.3;
+        double y1 = myPos[1]-TRUNK_INTERPOLATION_CORRECTION+0.5;
+        double y2 = myPos[1]-TRUNK_INTERPOLATION_CORRECTION+2;
+
+        // Sides of the cylinder
+        gl.glBegin(GL2.GL_TRIANGLES);
         {
-            //Set leaves material
-            float[] ambient = {0.3f, 0.4f, 0.3f, 1.0f};
-            float[] diffuse = {0.0f, 0.5f, 0.0f, 0.5f};
-            float[] specular = {0.5f, 0.5f, 0.5f, 0.7f};
+            double angleStep = 2*Math.PI/slices;
+            for (int i = 0; i <= slices ; i++){
+                double a0 = i * angleStep;
+                double a1 = ((i+1) % slices) * angleStep;
 
-            gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
-            gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
-            gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
+                //Calculate vertices for the quad
+                double x0 = (Math.cos(a0)*width+myPos[0]);
+                double z0 = (Math.sin(a0)*width+myPos[2]);
 
-            //Get texture
-            leavesTexture.enable(gl);
-            leavesTexture.bind(gl);
+                double x1 = (Math.cos(a1)*width+myPos[0]);
+                double z1 = (Math.sin(a1)*width+myPos[2]);
 
-            //Now make the spherical top of the trees which will sit on top of the cylinder
-            gl.glTranslated(myPos[0], myPos[1] + (0.8f - TRUNK_INTERPOLATION_CORRECTION), myPos[2]);
+                gl.glNormal3d(-(y2-y1)*(z1-z0),(x1-x0)*(y2-y1),0);
+                gl.glTexCoord2d(0,0);
+                gl.glVertex3d(x0, y1, z0);
+                gl.glTexCoord2d(0.5,3);
+                gl.glVertex3d(myPos[0], y2, myPos[2]);
+                gl.glTexCoord2d(1,0);
+                gl.glVertex3d(x1, y1, z1);
 
-            GLUquadric gluQuadratic = glu.gluNewQuadric();
-            glu.gluQuadricTexture(gluQuadratic, true);
-            glu.gluQuadricNormals(gluQuadratic, GLU.GLU_SMOOTH);
-            glu.gluSphere(gluQuadratic, 0.25f, 60, 60);
+            }
 
-            leavesTexture.disable(gl);
         }
-        gl.glPopMatrix();
+        gl.glEnd();
+
+        gl.glBegin(GL2.GL_TRIANGLE_FAN);{
+
+            gl.glNormal3d(0,0,-1);
+            gl.glTexCoord2d(0,0);
+            gl.glVertex3d(myPos[0], y1, myPos[2]);
+            double angleStep = 2*Math.PI/slices;
+            for (int i = 0; i <= slices ; i++){
+
+                double a0 = i * angleStep;
+
+                //Calculate vertices for the quad
+                double x0 = (Math.cos(a0)*width+myPos[0]);
+                double z0 = (Math.sin(a0)*width+myPos[2]);
+
+                if (i%2 == 0) {
+                    gl.glTexCoord2d(1,0);
+                } else {
+                    gl.glTexCoord2d(0,1);
+
+                }
+                gl.glVertex3d(x0,y1,z0);
+            }
+
+
+        } gl.glEnd();
 
         gl.glPopAttrib();
         gl.glPopMatrix();

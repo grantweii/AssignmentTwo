@@ -170,6 +170,11 @@ public class Road {
         texture.enable(gl);
         texture.bind(gl);
 
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D,   GL2.GL_TEXTURE_WRAP_S,
+                GL2.GL_MIRRORED_REPEAT);
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+                GL2.GL_MIRRORED_REPEAT);
+
         // This lifts the road slightly above the ground to avoid z-fighting
         double height = getAltitude() + ALTITUDE_OFFSET;
         // The amount we will increment each time along the curve
@@ -179,8 +184,8 @@ public class Road {
         double roadDistance = (myPoints.size() / 6.0) - (1.0/3.0) - (2 * step);
 
         // Constants for the material of the road
-        float[] ambient = {1f, 1f, 1f, 1.0f};
-        float[] diffuse = {1f, 1f, 1f, 1.0f};
+        float[] ambient = {0.65f, 0.65f, 0.65f, 1.0f};
+        float[] diffuse = {0.5f, 0.5f, 0.5f, 1.0f};
         float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
 
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
@@ -244,26 +249,28 @@ public class Road {
             double[] nextL = {nextV[0]-perpVectorNL[0],nextV[1]-perpVectorNL[1],nextV[2]-perpVectorNL[2]};
             double[] nextR = {nextV[0]+perpVectorNL[0],nextV[1]+perpVectorNL[1],nextV[2]+perpVectorNL[2]};
 
+            int reps = (int) Math.floor(Math.sqrt(NUM_ROAD_SEGMENTS))/3;
+
             // We draw the segment as two triangles in anticlockwise order
             // The road is always flat so the normal is just the up vector
             gl.glBegin(GL2.GL_TRIANGLES);
             {
                 // Draw the left triangle
                 gl.glNormal3dv(upVector,0);
-                gl.glTexCoord2d(1,0);
+                gl.glTexCoord2d(t/roadDistance*reps,0);
                 gl.glVertex3dv(currL,0);
-                gl.glTexCoord2d(1,1);
+                gl.glTexCoord2d((t+step)/roadDistance*reps,0);
                 gl.glVertex3dv(nextL,0);
-                gl.glTexCoord2d(0,1);
+                gl.glTexCoord2d((t+step)/roadDistance*reps,1);
                 gl.glVertex3dv(nextR,0);
 
                 // Draw the right triangle
                 gl.glNormal3dv(upVector,0);
-                gl.glTexCoord2d(0,0);
+                gl.glTexCoord2d(t/roadDistance*reps,1);
                 gl.glVertex3dv(currR,0);
-                gl.glTexCoord2d(1,0);
+                gl.glTexCoord2d(t/roadDistance*reps,0);
                 gl.glVertex3dv(currL,0);
-                gl.glTexCoord2d(0,1);
+                gl.glTexCoord2d((t+step)/roadDistance*reps,1);
                 gl.glVertex3dv(nextR,0);
             }
             gl.glEnd();

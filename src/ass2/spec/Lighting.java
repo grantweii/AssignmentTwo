@@ -22,9 +22,9 @@ public class Lighting implements KeyListener {
 
     // Colors
     private static float[] earlySunColor = {0.623f, 0.594f, 0.580f, 1f};
-    private static float[] lateSunColor  = {1.000f, 0.376f, 0.061f, 1f};
+    private static float[] lateSunColor  = {1.000f, 0.576f, 0.261f, 1f};
     private static float[] earlySkyColor = {0.529f, 0.808f, 0.980f, 1f};
-    private static float[] lateSkyColor  = {0.576f, 0.420f, 0.122f, 1f};
+    private static float[] lateSkyColor  = {0.976f, 0.820f, 0.522f, 1f};
     private static float[] nightSkyColor = {0.025f, 0.093f, 0.187f, 1f};
 
     // Sun movement

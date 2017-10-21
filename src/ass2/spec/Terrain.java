@@ -214,9 +214,14 @@ public class Terrain {
         terrainTexture.enable(gl);
         terrainTexture.bind(gl);
 
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D,   GL2.GL_TEXTURE_WRAP_S,
+                GL2.GL_MIRRORED_REPEAT);
+        gl.glTexParameteri( GL2.GL_TEXTURE_2D, GL2.GL_TEXTURE_WRAP_T,
+                GL2.GL_MIRRORED_REPEAT);
+
         // Set constants for the terrain's material
-        float[] ambient = {0.2f, 0.25f, 0.2f, 1.0f};
-        float[] diffuse = {0.2f, 0.6f, 0.3f, 1.0f};
+        float[] ambient = {0.4f, 0.4f, 0.4f, 1.0f};
+        float[] diffuse = {0.6f, 0.6f, 0.6f, 1.0f};
         float[] specular = {0.0f, 0.0f, 0.0f, 1.0f};
 
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
@@ -242,11 +247,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormL, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
-                    gl.glTexCoord2d(0,0);
+                    gl.glTexCoord2d(v1[0],v1[2]);
                     gl.glVertex3dv(v1, 0);
-                    gl.glTexCoord2d(0,1);
+                    gl.glTexCoord2d(v2[0],v2[2]);
                     gl.glVertex3dv(v2, 0);
-                    gl.glTexCoord2d(1,0);
+                    gl.glTexCoord2d(v3[0],v3[2]);
                     gl.glVertex3dv(v3, 0);
                 }
                 gl.glEnd();
@@ -263,11 +268,11 @@ public class Terrain {
                 gl.glNormal3dv(faceNormR, 0);
                 gl.glBegin(GL2.GL_TRIANGLES);
                 {
-                    gl.glTexCoord2d(1, 0);
+                    gl.glTexCoord2d(v4[0],v4[2]);
                     gl.glVertex3dv(v4, 0);
-                    gl.glTexCoord2d(0, 1);
+                    gl.glTexCoord2d(v5[0],v5[2]);
                     gl.glVertex3dv(v5, 0);
-                    gl.glTexCoord2d(1, 1);
+                    gl.glTexCoord2d(v6[0],v6[2]);
                     gl.glVertex3dv(v6, 0);
 
                 }
