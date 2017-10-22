@@ -58,7 +58,26 @@ public class Avatar implements KeyListener {
 			init(gl);
 			initialised = true;
 		}
+		
+		gl.glPushMatrix();
 
+	        gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
+	        gl.glTranslated(x, y, z);
+	        gl.glRotated(-myRotation, 0, 1, 0);
+	        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+	    	drawSphere(gl);
+	    	gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
+
+		gl.glPopMatrix();
+		
+				
+		System.out.println("x: " + x);
+		System.out.println("z: "  + z);
+		System.out.println(myRotation);
+
+	}
+	
+	public void checkPortal() {
 		//enters 1st portal
 		if (enterPortal() == 1) {
 			float[] secondPortalCoords = portals.getSecondPortalCoords();
@@ -85,23 +104,6 @@ public class Avatar implements KeyListener {
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
 		}
-		
-		gl.glPushMatrix();
-
-	        gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
-	        gl.glTranslated(x, y, z);
-	        gl.glRotated(-myRotation, 0, 1, 0);
-	        gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-	    	drawSphere(gl);
-	    	gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-
-		gl.glPopMatrix();
-		
-				
-		System.out.println("x: " + x);
-		System.out.println("z: "  + z);
-		System.out.println(myRotation);
-
 	}
 
 	double r(double t){
@@ -170,6 +172,8 @@ public class Avatar implements KeyListener {
     		gl.glEnd();  
     	}
     }
+	
+	
 	
 	public void init(GL2 gl) {
 		//materials
@@ -268,10 +272,12 @@ public class Avatar implements KeyListener {
         	//UP, DOWN is translation
             case KeyEvent.VK_UP: {
                 moveForward();
+                checkPortal();
                 break;
             }
             case KeyEvent.VK_DOWN: {
             	moveBackward();
+            	checkPortal();
             	break;
             }
             //LEFT RIGHT is rotation

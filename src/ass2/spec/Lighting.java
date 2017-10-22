@@ -99,6 +99,7 @@ public class Lighting implements KeyListener {
 
         gl.glPopMatrix();
     }
+    
 
     private void drawDay(GL2 gl) {
         gl.glPushMatrix();
@@ -163,6 +164,10 @@ public class Lighting implements KeyListener {
         gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_EXPONENT, 0.0f); //attenuation
 
         gl.glPopMatrix();
+    }
+    
+    public boolean getIsDay() {
+    	return isDay;
     }
 
     @Override

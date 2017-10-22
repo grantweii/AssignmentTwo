@@ -217,15 +217,19 @@ public class Enemy {
 		    texUnitPos = gl.glGetUniformLocation(shaderProgram, "texUnit");
 		    gl.glActiveTexture(GL.GL_TEXTURE0);
 		    gl.glUniform1i(texUnitPos, 0); //0 for GL_TEXTURE0
-
-		    int sunID = gl.glGetUniformLocation(shaderProgram, "lightPosition");
-
+		    
+		    System.out.println(nightEnabled);
+		    
+		    int nightMode = gl.glGetUniformLocation(shaderProgram, "nightMode");
+		    int lightPos = gl.glGetUniformLocation(shaderProgram, "lightPosition");
 		    //If night mode, the sun is the position of the camera (spotlight)
 		    if (nightEnabled) {
-		    	gl.glUniform3fv(sunID, 1, torchCoordinates, 0);
+		    	gl.glUniform3fv(lightPos, 1, torchCoordinates, 0);
+			    gl.glUniform1i(nightMode, 1);
 		    } else {
 		    	//System.out.println(terrain.getSunlight().length);
-		    	gl.glUniform3fv(sunID, 1, sunCoordinates, 0);
+		    	gl.glUniform3fv(lightPos, 1, sunCoordinates, 0);
+			    gl.glUniform1i(nightMode, 0);
 		    }
 
 //			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
