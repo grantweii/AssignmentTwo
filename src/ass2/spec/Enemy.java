@@ -35,7 +35,7 @@ public class Enemy {
 	public Enemy(float x, float y, float z) {
 		this.initialised = false;
 		this.x = x;
-		this.y = y;
+		this.y = y + 0.2f;
 		this.z = z;
 	}
 
@@ -174,7 +174,7 @@ public class Enemy {
 	    }
 	}
 
-	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation) {
+	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation, boolean torchEnabled) {
 
 		if (!initialised) {
 			init(gl,shaderProgram);
@@ -225,8 +225,13 @@ public class Enemy {
 		    int enemyPosition = gl.glGetUniformLocation(shaderProgram, "enemyPos");
 		    gl.glUniform3fv(enemyPosition, 1, enemyCoords, 0);
 		    
-		    System.out.println(nightEnabled);
-		    
+		    int torchPosition = gl.glGetUniformLocation(shaderProgram, "isTorchOn");
+		    if (torchEnabled) {
+		    	gl.glUniform1i(torchPosition, 1);
+		    } else {
+		    	gl.glUniform1i(torchPosition, 0);
+		    }
+
 		    int nightMode = gl.glGetUniformLocation(shaderProgram, "nightMode");
 		    int lightPos = gl.glGetUniformLocation(shaderProgram, "lightPosition");
 		    //If night mode, the sun is the position of the camera (spotlight)

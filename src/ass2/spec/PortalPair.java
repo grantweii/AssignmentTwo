@@ -35,8 +35,8 @@ public class PortalPair implements KeyListener{
 	}
 	
 	public void spawnPortals() {
-		float x1 = 3f;
-		float z1 = 0.1f;
+		float x1 = 8f;
+		float z1 = 2.5f;
 		float y1 = (float) (terrain.altitude(x1, z1));
 		firstPortalCoords = new float[]{ x1, y1, z1 };
 		
@@ -46,8 +46,8 @@ public class PortalPair implements KeyListener{
 		secondPortalCoords = new float[]{ x2, y2, z2 };
 	}
 	
-	public void teleportToPortal() {
-		
+	public boolean getPortalState() {
+		return isPortalOn;
 	}
 	
 	public float[] getFirstPortalCoords() {

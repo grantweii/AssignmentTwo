@@ -198,4 +198,8 @@ public class Lighting implements KeyListener {
     public void keyReleased(KeyEvent e) {
 
     }
+
+	public boolean isTorchOn() {
+		return isTorchOn;
+	}
 }

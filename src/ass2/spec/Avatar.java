@@ -73,8 +73,8 @@ public class Avatar implements KeyListener {
 		gl.glPopMatrix();
 		
 				
-//		System.out.println("x: " + x);
-//		System.out.println("z: "  + z);
+		System.out.println("x: " + x);
+		System.out.println("z: "  + z);
 		System.out.println(myRotation);
 
 	}
@@ -275,12 +275,12 @@ public class Avatar implements KeyListener {
         	//UP, DOWN is translation
             case KeyEvent.VK_UP: {
                 moveForward();
-                checkPortal();
+                if (portals.getPortalState()) checkPortal();
                 break;
             }
             case KeyEvent.VK_DOWN: {
             	moveBackward();
-            	checkPortal();
+            	if (portals.getPortalState()) checkPortal();
             	break;
             }
             //LEFT RIGHT is rotation
