@@ -174,7 +174,7 @@ public class Enemy {
 	    }
 	}
 
-	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates) {
+	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation) {
 
 		if (!initialised) {
 			init(gl,shaderProgram);
@@ -217,6 +217,9 @@ public class Enemy {
 		    texUnitPos = gl.glGetUniformLocation(shaderProgram, "texUnit");
 		    gl.glActiveTexture(GL.GL_TEXTURE0);
 		    gl.glUniform1i(texUnitPos, 0); //0 for GL_TEXTURE0
+		    
+		    int avatarRotationPos = gl.glGetUniformLocation(shaderProgram, "avatarRotation");
+		    gl.glUniform1i(avatarRotationPos, (int) avatarRotation);
 		    
 		    System.out.println(nightEnabled);
 		    

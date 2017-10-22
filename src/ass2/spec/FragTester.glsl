@@ -15,7 +15,7 @@ void main (void) {
    	
    	//if night, check if within spotlight
   	if (isNight) {
-	  	vec3 lightDir = vec3(gl_LightSource[0].position-ecPos);
+	  	vec3 lightDir = vec3(gl_LightSource[1].position-ecPos);
 	     
 	    /* compute the distance to the light source to a varying variable*/
 	    dist = length(lightDir);
@@ -23,8 +23,8 @@ void main (void) {
 		if (NdotL > 0.0) {
 	 
 	 	//if within spotlight
-	    float spotEffect = dot(normalize(gl_LightSource[0].spotDirection), normalize(-lightDir));
-	    if (spotEffect > gl_LightSource[0].spotCosCutoff) {
+	    float spotEffect = dot(normalize(gl_LightSource[1].spotDirection), normalize(-lightDir));
+	    if (spotEffect > gl_LightSource[1].spotCosCutoff) {
 	 		//SPOTLIGHT ILLUMINATION
 	 		
 	 		
