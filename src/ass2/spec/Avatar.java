@@ -89,10 +89,10 @@ public class Avatar implements KeyListener {
 			float midX = ((secondPortalBounds[0] + secondPortalBounds[1]) / 2);
 			x = midX;
 			//new Z is simply second portal Z
-			z = secondPortalCoords[2] - 0.12f;
+			z = secondPortalCoords[2];
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-			myRotation = 270;
+			
 		//enters 2nd portal
 		} else if (enterPortal() == 2) {
 			float[] firstPortalCoords = portals.getFirstPortalCoords();
@@ -102,10 +102,10 @@ public class Avatar implements KeyListener {
 			float midX = ((firstPortalBounds[0] + firstPortalBounds[1]) / 2);
 			x = midX;
 			//new Z is simply second portal Z
-			z = firstPortalCoords[2] + 0.12f;
+			z = firstPortalCoords[2];
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-			myRotation = 90;
+			
 		}
 	}
 

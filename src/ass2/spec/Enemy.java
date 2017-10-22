@@ -62,7 +62,7 @@ public class Enemy {
 
 	public void init(GL2 gl, int shaderProgram){
 		gl.glEnable(GL2.GL_TEXTURE_2D);
-		myTexture = new MyTexture(gl,"resources/textures/rainbow.png","png",true);
+		myTexture = new MyTexture(gl,"resources/textures/rock.jpg","jpg",true);
 //		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 		texUnitPos = gl.glGetUniformLocation(shaderProgram, "texUnit");
 
