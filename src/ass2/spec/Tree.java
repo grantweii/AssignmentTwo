@@ -17,7 +17,7 @@ public class Tree {
 
     private static double TREE_HEIGHT = 1;
     private static double WIDTH_MULTIPLIER = 0.1;
-    private static double TRUNK_INTERPOLATION_CORRECTION = 0.2;
+    private static double TRUNK_INTERPOLATION_CORRECTION = 0.1;
     private static double NUM_SLICES = 32;
     private static boolean CYLINDER = true;
 
@@ -33,9 +33,6 @@ public class Tree {
     }
 
     public void draw(GL2 gl, Texture trunkTexture, Texture leavesTexture) {
-
-        // TODO: Replace this with a different object
-        // TODO: Add textures
 
         // Push the matrix and lighting
         gl.glPushMatrix();
@@ -71,6 +68,8 @@ public class Tree {
         gl.glPopAttrib();
         gl.glPopMatrix();
 
+        // Draw trunk
+
         gl.glPushMatrix();
 
         // Set trunk material
@@ -82,7 +81,7 @@ public class Tree {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
 
-        //Get texture
+        // Get texture
         leavesTexture.enable(gl);
         leavesTexture.bind(gl);
 

@@ -51,7 +51,7 @@ public class MathUtil {
         return false;
     }
 
-    // TODO: Does this function have any
+    // TODO: Does this function have any use
     public static void normalize(double[] v) {
     	double d = Math.sqrt(v[0]*v[0]+v[1]*v[1]+v[2]*v[2]);  
         if (d != 0.0) {  

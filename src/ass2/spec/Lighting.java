@@ -178,11 +178,11 @@ public class Lighting implements KeyListener {
                 break;
             }
             case KeyEvent.VK_W: {
-                isDay = !isDay;
+                if (!isSunMoving) isDay = !isDay;
                 break;
             }
             case KeyEvent.VK_E: {
-                isTorchOn = !isTorchOn;
+                if (!isSunMoving && !isDay) isTorchOn = !isTorchOn;
                 break;
             }
             default: break;

@@ -44,18 +44,6 @@ public class Game extends JFrame implements GLEventListener{
     private static final String VERTEX_TEX_SHADER = "src/ass2/spec/VertexTex.glsl";
     private static final String FRAGMENT_TEX_SHADER = "src/ass2/spec/FragmentTex.glsl";
 
-    // Day mode variables
-    private float sunT = 0;
-    private boolean isSunMoving = false;
-    private float[] earlySunColor = {0.623f,0.594f,0.58035f};
-    private float[] lateSunColor = {1f,0.576f,0.161f};
-    private float[] earlySkyColor = {0.529411f, 0.807843f, 0.980392f};
-    private float[] lateSkyColor = {0.976f, 0.820f, 0.522f};
-
-    // Night mode variables
-    private boolean isNight = false;
-    private boolean isTorchOn = true;
-
     /**
      * Constructor
      *
@@ -69,9 +57,6 @@ public class Game extends JFrame implements GLEventListener{
  		avatar = new Avatar(myTerrain, portal);
         lighting = new Lighting(myTerrain.getSunlight(), avatar);
  		camera = new Camera(avatar);
- 		// TODO: Once enemies is part of the terrain file we should not need to initialise it here
-//    	enemies = new ArrayList<Enemy>();
-//        initEnemies(terrain);
         rand = new Random();
         texturePack = new TexturePack();
     }
@@ -203,10 +188,4 @@ public class Game extends JFrame implements GLEventListener{
         glu.gluPerspective(60, (float)width/(float)height, 0.1, 20);
     }
 
-/*    private void initEnemies(Terrain terrain) {
-        for (int i = 0; i < 3; i++) {
-            Enemy e = new Enemy(terrain);
-            enemies.add(e);
-        }
-    }*/
 }

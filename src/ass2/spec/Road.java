@@ -163,7 +163,6 @@ public class Road {
      * @param gl
      */
     public void draw(GL2 gl, Texture texture) {
-        // TODO: Add textures to the road
         gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
 
@@ -226,8 +225,6 @@ public class Road {
             perpVectorCN[0] = perpVectorCN[0]*(width()/2);
             perpVectorCN[1] = perpVectorCN[1]*(width()/2);
             perpVectorCN[2] = perpVectorCN[2]*(width()/2);
-
-            // TODO: See if using the perpVectorNL caused the segment to taper
 
             // Calculate the vector from the next point the the last point
             // This is the next segment, although we are not drawing it, we will need the
