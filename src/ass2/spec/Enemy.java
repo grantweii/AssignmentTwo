@@ -169,7 +169,7 @@ public class Enemy {
 		}
 
 		float ambientL = 0.1f;
-		float ambientH = 0.3f;
+		float ambientH = 0.25f;
 
 		// Interpolate between ambient low and height
 
