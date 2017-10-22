@@ -174,15 +174,23 @@ public class Enemy {
 	    }
 	}
 
-	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation, boolean torchEnabled) {
+	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation, boolean torchEnabled, float sunT) {
 
 		if (!initialised) {
 			init(gl,shaderProgram);
 			initialised = true;
 		}
 
-		float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
-		float[] diffuse = {1.0f, 1.0f, 1.0f, 1.0f};
+		float ambientL = 0.1f;
+		float ambientH = 0.3f;
+
+		// Interpolate between ambient low and hight
+
+		float ambientInterp = ambientH*((float) Math.sin(sunT*2*Math.PI)) + ambientL*(1-(float) Math.sin(sunT*2*Math.PI)) ;
+		System.out.println("ambientInterp: " + ambientInterp);
+
+		float[] ambient = {ambientInterp, ambientInterp, ambientInterp, 1.0f};
+		float[] diffuse = {ambientInterp*3, ambientInterp*3, ambientInterp*3, 1.0f};
 	    float[] specular = {0.2f, 0.2f, 0.2f, 1.0f};
 
     	gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);

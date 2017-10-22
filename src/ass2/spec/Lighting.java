@@ -31,6 +31,22 @@ public class Lighting implements KeyListener {
     private static float sunT = 0f; // Interpolation value (t)
     private static float SUN_MOVEMENT_SPEED = 0.001f;
 
+    public Lighting(float[] sunDir, Avatar avatar) {
+        this.sunDir[0] = sunDir[0];
+        this.sunDir[1] = sunDir[1];
+        this.sunDir[2] = sunDir[2];
+        this.sunDir[0] = 0;
+        this.avatar = avatar;
+    }
+
+    public boolean isTorchOn() {
+        return isTorchOn;
+    }
+
+    public static float getSunT() {
+        return sunT;
+    }
+
     public void draw(GL2 gl) {
         if (isSunMoving) {
             drawMoving(gl);
@@ -41,14 +57,6 @@ public class Lighting implements KeyListener {
         } else {
             drawNight(gl);
         }
-    }
-
-    public Lighting(float[] sunDir, Avatar avatar) {
-        this.sunDir[0] = sunDir[0];
-        this.sunDir[1] = sunDir[1];
-        this.sunDir[2] = sunDir[2];
-        this.sunDir[0] = 0;
-        this.avatar = avatar;
     }
 
     private void drawMoving(GL2 gl) {
@@ -156,7 +164,8 @@ public class Lighting implements KeyListener {
         gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_POSITION, torchPosition, 0);
 
         // Torch direction
-        float[] torchDirection = {(float)Math.cos(Math.toRadians(avatar.getRotation())), 0.0f, (float)Math.sin(Math.toRadians(avatar.getRotation()))};
+        float[] torchDirection = {(float)Math.cos(Math.toRadians(avatar.getRotation())),
+                0.0f, (float)Math.sin(Math.toRadians(avatar.getRotation()))};
         gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_SPOT_DIRECTION, torchDirection, 0); //direction vector
 
         // Torch cut off and attenuation
@@ -199,7 +208,4 @@ public class Lighting implements KeyListener {
 
     }
 
-	public boolean isTorchOn() {
-		return isTorchOn;
-	}
 }

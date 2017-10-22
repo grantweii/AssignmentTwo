@@ -126,7 +126,7 @@ public class Game extends JFrame implements GLEventListener{
         // Draw enemies
         float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
         for (Enemy enemy: myTerrain.enemies()) {
-        	enemy.draw(gl,TextureShader,!lighting.getIsDay(),torchCoordinates,myTerrain.getSunlight(),avatar.getRotation(),lighting.isTorchOn());
+        	enemy.draw(gl,TextureShader,!lighting.getIsDay(),torchCoordinates,myTerrain.getSunlight(),avatar.getRotation(),lighting.isTorchOn(), lighting.getSunT());
         }
 
         // Draw terrain
