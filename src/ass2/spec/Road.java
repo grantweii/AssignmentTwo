@@ -208,7 +208,6 @@ public class Road {
             double[] nextV = {nextP[0], height, nextP[1]};
             double[] lastV = {lastP[0], height, lastP[1]};
 
-            // TODO: Check to see if any of the vectors are 0 as this will be invalid input to some Mathutil methods
 
             // Calculate the vector from the current point to the next point
             // This will be the segment of the curve that we draw this repetition

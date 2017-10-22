@@ -31,7 +31,6 @@ public class Game extends JFrame implements GLEventListener{
     private TexturePack texturePack;
     private PortalPair portal;
 
-    // TODO: Name this
     Random rand;
 
     // Shader variables
@@ -116,7 +115,6 @@ public class Game extends JFrame implements GLEventListener{
         //draw avatar
         avatar.draw(gl);
 
-        // TODO: Implement an avatar method which returns its coordinates
         // Draw enemies
         float[] torchCoordinates = { (float) avatar.getX(), (float) avatar.getY(), (float) avatar.getZ() };
         for (Enemy enemy: myTerrain.enemies()) {

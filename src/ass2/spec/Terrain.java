@@ -116,7 +116,6 @@ public class Terrain {
         myAltitude[x][z] = h;
     }
 
-    // TODO: Change this code around
     /**
      * Get the altitude at an arbitrary point.
      * Non-integer points should be interpolated from neighbouring grid points

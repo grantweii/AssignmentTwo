@@ -27,3 +27,7 @@
 ### Other Controls ###
 
 * Press T to toggle between first and third person view
+
+## Problems ##
+
+When running on a Mac, there is a glitch with the shading of the enemies, on PC it acts as intended
