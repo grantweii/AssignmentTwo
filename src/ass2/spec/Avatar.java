@@ -16,7 +16,7 @@ public class Avatar implements KeyListener {
 	private float y;
 	private float z;
 	private double myRotation = 300;
-	private double rotationStep = 2;
+	private double rotationStep = 3;
 	private double speed = 0.1;
 	private MyTexture myTexture;
 	private boolean initialised;
@@ -40,12 +40,14 @@ public class Avatar implements KeyListener {
 		float[] firstPortalCoords = portals.getFirstPortalCoords();
 		float[] firstPortalBounds = portals.getFirstPortalBounds();
 		
-		float[] secondPortalCoords = portals.getFirstPortalCoords();
+		float[] secondPortalCoords = portals.getSecondPortalCoords();
 		float[] secondPortalBounds = portals.getSecondPortalBounds();
 		
-		if (z < firstPortalCoords[2] && x > firstPortalBounds[0] && x < firstPortalBounds[1])  {
+		if ((z < (firstPortalCoords[2] + 0.06) && (z > (firstPortalCoords[2] - 0.06))) && x > firstPortalBounds[0] && x < firstPortalBounds[1])  {
+			System.out.println("returned 1");
 			return 1;
-		} else if (z < secondPortalCoords[2] && x > secondPortalBounds[0] && x < secondPortalBounds[1]) {
+		} else if ((z < (secondPortalCoords[2] + 0.06) && (z > (secondPortalCoords[2] - 0.06))) && x > secondPortalBounds[0] && x < secondPortalBounds[1]) {
+			System.out.println("returned 2");
 			return 2;
 		} else {
 			return 0;
@@ -71,8 +73,8 @@ public class Avatar implements KeyListener {
 		gl.glPopMatrix();
 		
 				
-		System.out.println("x: " + x);
-		System.out.println("z: "  + z);
+//		System.out.println("x: " + x);
+//		System.out.println("z: "  + z);
 		System.out.println(myRotation);
 
 	}
@@ -87,10 +89,10 @@ public class Avatar implements KeyListener {
 			float midX = ((secondPortalBounds[0] + secondPortalBounds[1]) / 2);
 			x = midX;
 			//new Z is simply second portal Z
-			z = secondPortalCoords[2];
+			z = secondPortalCoords[2] - 0.12f;
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-
+			myRotation = 270;
 		//enters 2nd portal
 		} else if (enterPortal() == 2) {
 			float[] firstPortalCoords = portals.getFirstPortalCoords();
@@ -100,9 +102,10 @@ public class Avatar implements KeyListener {
 			float midX = ((firstPortalBounds[0] + firstPortalBounds[1]) / 2);
 			x = midX;
 			//new Z is simply second portal Z
-			z = firstPortalCoords[2];
+			z = firstPortalCoords[2] + 0.12f;
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
+			myRotation = 90;
 		}
 	}
 
