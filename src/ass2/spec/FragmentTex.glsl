@@ -4,6 +4,7 @@ uniform vec3 lightPosition;
 uniform sampler2D texUnit;
 uniform bool nightMode;
 uniform int avatarRotation;
+uniform vec3 enemyPos;
 
 varying vec4 ecPos;
 varying vec2 texCoordV;

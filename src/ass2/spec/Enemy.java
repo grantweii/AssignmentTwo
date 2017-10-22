@@ -221,6 +221,10 @@ public class Enemy {
 		    int avatarRotationPos = gl.glGetUniformLocation(shaderProgram, "avatarRotation");
 		    gl.glUniform1i(avatarRotationPos, (int) avatarRotation);
 		    
+		    float[] enemyCoords = new float[]{x,y,z};
+		    int enemyPosition = gl.glGetUniformLocation(shaderProgram, "enemyPos");
+		    gl.glUniform3fv(enemyPosition, 1, enemyCoords, 0);
+		    
 		    System.out.println(nightEnabled);
 		    
 		    int nightMode = gl.glGetUniformLocation(shaderProgram, "nightMode");
