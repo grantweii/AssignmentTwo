@@ -23,9 +23,9 @@ void main (void) {
     if (nightMode) {
 
 	    vec3 toLight;
-        toLight.x = ecPos.x-lightPosition.x;
+        toLight.x = enemyPos.x-lightPosition.x;
         toLight.y = 0;
-        toLight.z = ecPos.z-lightPosition.z;
+        toLight.z = enemyPos.z-lightPosition.z;
 
         vec3 avRot;
         avRot.x = cos(avatarRotation*3.141/180);
@@ -36,7 +36,7 @@ void main (void) {
 
         float angle = acos(arg);
 
-        if (angle < 0.5) {
+        if (angle < 0.6 && isTorchOn) {
             //ambient lighting
             vec4 l_ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
             l_ambient = clamp(l_ambient, 0.0, 1.0);
