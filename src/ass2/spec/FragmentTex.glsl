@@ -36,7 +36,7 @@ void main (void) {
 
         float angle = acos(arg);
 
-        if (angle < 0.6 && isTorchOn) {
+        if (angle < 0.45 && isTorchOn) {
             //ambient lighting
             vec4 l_ambient = gl_FrontMaterial.ambient * gl_LightSource[0].ambient;
             l_ambient = clamp(l_ambient, 0.0, 1.0);

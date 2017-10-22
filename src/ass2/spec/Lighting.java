@@ -169,7 +169,7 @@ public class Lighting implements KeyListener {
         gl.glLightfv(GL2.GL_LIGHT2, GL2.GL_SPOT_DIRECTION, torchDirection, 0); //direction vector
 
         // Torch cut off and attenuation
-        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_CUTOFF, 45.0f); //cutoff angle
+        gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_CUTOFF, 30.0f); //cutoff angle
         gl.glLightf(GL2.GL_LIGHT2, GL2.GL_SPOT_EXPONENT, 0.0f); //attenuation
 
         gl.glPopMatrix();
@@ -183,7 +183,7 @@ public class Lighting implements KeyListener {
     public void keyPressed(KeyEvent e) {
         switch (e.getKeyCode()) {
             case KeyEvent.VK_Q: {
-                isSunMoving = !isSunMoving;
+                if (isDay) isSunMoving = !isSunMoving;
                 break;
             }
             case KeyEvent.VK_W: {

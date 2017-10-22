@@ -184,7 +184,7 @@ public class Enemy {
 		float ambientL = 0.1f;
 		float ambientH = 0.3f;
 
-		// Interpolate between ambient low and hight
+		// Interpolate between ambient low and height
 
 		float ambientInterp = ambientH*((float) Math.sin(sunT*2*Math.PI)) + ambientL*(1-(float) Math.sin(sunT*2*Math.PI)) ;
 		System.out.println("ambientInterp: " + ambientInterp);
