@@ -26,14 +26,11 @@ public class PortalPair implements KeyListener{
 	public PortalPair(Terrain terrain) {
 		this.terrain = terrain;
 		spawnPortals();
-		firstPortalBounds = new float[2];
-		secondPortalBounds = new float[2];
-        firstPortalBounds[0] = firstPortalCoords[0];
-        firstPortalBounds[1] = firstPortalCoords[0]+0.5f;
-        secondPortalBounds[0] = secondPortalCoords[0]-0.5f;
-        secondPortalBounds[1] = secondPortalCoords[0];
 	}
 	
+	/**
+	 * initialises coordinates and x coordinate bounds of both portals
+	 */
 	public void spawnPortals() {
 		float x1 = 8f;
 		float z1 = 2.5f;
@@ -44,6 +41,14 @@ public class PortalPair implements KeyListener{
 		float z2 = 4.9f;
 		float y2 = (float) (terrain.altitude(x2, z2));
 		secondPortalCoords = new float[]{ x2, y2, z2 };
+		
+		firstPortalBounds = new float[2];
+        firstPortalBounds[0] = firstPortalCoords[0];
+        firstPortalBounds[1] = firstPortalCoords[0]+0.5f;
+        
+		secondPortalBounds = new float[2];
+        secondPortalBounds[0] = secondPortalCoords[0]-0.5f;
+        secondPortalBounds[1] = secondPortalCoords[0];
 	}
 	
 	public boolean getPortalState() {
@@ -66,10 +71,16 @@ public class PortalPair implements KeyListener{
 		return secondPortalBounds;
 	}
 	
+	/**
+	 * draws both sides of the portal using both winding orders
+	 * @param gl
+	 * @param portalTexture
+	 */
 	public void draw(GL2 gl, Texture portalTexture ) {
 
 		if (!isPortalOn) return;
 		
+		//coordinates of first portal
         float[] v1 = {firstPortalCoords[0], firstPortalCoords[1], firstPortalCoords[2]};
         float[] v2 = {firstPortalCoords[0]+0.5f, firstPortalCoords[1], firstPortalCoords[2]};
         float[] v3 = {firstPortalCoords[0]+0.5f, firstPortalCoords[1]+1, firstPortalCoords[2]};
@@ -79,20 +90,12 @@ public class PortalPair implements KeyListener{
 		gl.glPushMatrix();
         gl.glPushAttrib(GL2.GL_LIGHTING);
 
-		float[] ambient = {0.1f, 0.18725f, 0.1745f, 1.0f};
-		float[] diffuse = {0.396f, 0.74151f, 0.69102f, 1.0f};
-		float[] specular = {0.297254f, 0.30829f, 0.306678f, 1.0f};
-
+		//bind the texture
 		portalTexture.enable(gl);
 		portalTexture.bind(gl);
 
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_AMBIENT, ambient, 0);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
-		gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
-        
     		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
             
-            //gl.glTranslated(x1, y1, z1);
             gl.glBegin(GL2.GL_POLYGON); 
             {
             	gl.glColor3f(1, 0, 0);
@@ -109,38 +112,31 @@ public class PortalPair implements KeyListener{
         
     		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
     		
-    		 gl.glBegin(GL2.GL_POLYGON); 
-             {
+    		gl.glBegin(GL2.GL_POLYGON); 
+            {
              	gl.glColor3f(1, 0, 0);
              	gl.glTexCoord2d(0,0.2);
-	             gl.glVertex3fv(v1,0);
-	             gl.glTexCoord2d(0,0.8);
-	             gl.glVertex3fv(v4,0);
-	             gl.glTexCoord2d(1,0.8);
-	             gl.glVertex3fv(v3,0);
-	             gl.glTexCoord2d(1,0.2);
-	             gl.glVertex3fv(v2,0);
-             }
-             gl.glEnd();
+	            gl.glVertex3fv(v1,0);
+	            gl.glTexCoord2d(0,0.8);
+	            gl.glVertex3fv(v4,0);
+	            gl.glTexCoord2d(1,0.8);
+	            gl.glVertex3fv(v3,0);
+	            gl.glTexCoord2d(1,0.2);
+	            gl.glVertex3fv(v2,0);
+            }
+            gl.glEnd();
              
      		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
-
-
-        gl.glPopAttrib();
-        gl.glPopMatrix();
         
-        float[] v5 = {secondPortalCoords[0], secondPortalCoords[1], secondPortalCoords[2]};
-        float[] v6 = {secondPortalCoords[0]-0.5f, secondPortalCoords[1], secondPortalCoords[2]};
-        float[] v7 = {secondPortalCoords[0]-0.5f, secondPortalCoords[1]+1, secondPortalCoords[2]};
-        float[] v8 = {secondPortalCoords[0], secondPortalCoords[1]+1, secondPortalCoords[2]};
-        
-        //2nd portal
-        gl.glPushMatrix();
-        gl.glPushAttrib(GL2.GL_LIGHTING);
+	        //coordinates of second portal
+	        float[] v5 = {secondPortalCoords[0], secondPortalCoords[1], secondPortalCoords[2]};
+	        float[] v6 = {secondPortalCoords[0]-0.5f, secondPortalCoords[1], secondPortalCoords[2]};
+	        float[] v7 = {secondPortalCoords[0]-0.5f, secondPortalCoords[1]+1, secondPortalCoords[2]};
+	        float[] v8 = {secondPortalCoords[0], secondPortalCoords[1]+1, secondPortalCoords[2]};
         
     		gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
             
-            //gl.glTranslated(x2, y2, z2);
+            //2nd portal
             gl.glBegin(GL2.GL_POLYGON); 
             {
             	gl.glColor3f(1, 0, 0);
@@ -177,8 +173,6 @@ public class PortalPair implements KeyListener{
         gl.glPopAttrib();
         gl.glPopMatrix();
         
-//        portalTexture.disable(gl);
-
 	}
 
 	@Override

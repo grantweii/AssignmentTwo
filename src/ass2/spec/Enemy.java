@@ -1,8 +1,6 @@
 package ass2.spec;
 
 import java.nio.FloatBuffer;
-import java.util.Random;
-
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
@@ -20,10 +18,6 @@ public class Enemy {
 	private FloatBuffer colourBuffer;
 	private FloatBuffer normalBuffer;
 	private FloatBuffer textureBuffer;
-	private float[] vertexArray;
-	private float[] colourArray;
-	private float[] normalArray;
-	private float[] textureArray;
 	private int vertexID;
 	private int colourID;
 	private int normalID;
@@ -39,17 +33,6 @@ public class Enemy {
 		this.z = z;
 	}
 
-//	public void spawnCoords() {
-//		Random rand = new Random();
-//		x = rand.nextFloat() * (terrain.size().width - 1);
-//		z = rand.nextFloat() * (terrain.size().height - 1);
-//		y = (float) (terrain.altitude(x, z) + 0.2);
-//	}
-
-	public void dispose(GL2 gl) {
-		gl.glDeleteBuffers(3, bufferIDs, 0);
-	}
-
 	double getX(double t){
     	double x  = Math.cos(2 * Math.PI * t);
         return x;
@@ -60,10 +43,16 @@ public class Enemy {
         return y;
     }
 
+    /**
+     * creates the VBO buffers by iterating through coordinates of a sphere and puts into buffer array
+     * Code Source: "http://math.hws.edu/graphicsbook/source/jogl/ColorCubeOfSpheres.java"
+     * 
+     * @param gl
+     * @param shaderProgram
+     */
 	public void init(GL2 gl, int shaderProgram){
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		myTexture = new MyTexture(gl,"resources/textures/rock.jpg","jpg",true);
-//		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 		texUnitPos = gl.glGetUniformLocation(shaderProgram, "texUnit");
 
 		double radius = 0.2;
@@ -71,15 +60,11 @@ public class Enemy {
 	    int slices = 32;
 	    int size = stacks * (slices+1) * 2 * 3;
 
+	    //create the buffer objects
     	vertexBuffer = Buffers.newDirectFloatBuffer(size);
     	colourBuffer = Buffers.newDirectFloatBuffer(size);
     	normalBuffer = Buffers.newDirectFloatBuffer(size);
     	textureBuffer = Buffers.newDirectFloatBuffer(size);
-
-    	vertexArray = new float[size];
-    	colourArray = new float[size];
-    	normalArray = new float[size];
-    	textureArray = new float[size];
 
     	//initialise sphere positions to put into buffer array
     	for (int i = 0; i < stacks; i++) {
@@ -122,30 +107,20 @@ public class Enemy {
     	    }
 		}
 
-    	Random rand = new Random();
-
-    	//randomise the colours
-		for (int i = 0; i < size; i++) {
-		      vertexArray[i] = vertexBuffer.get(i);
-		      normalArray[i] = normalBuffer.get(i);
-		      textureArray[i] = textureBuffer.get(i);
-
-		      colourBuffer.put(rand.nextFloat());
-		      colourArray[i] = colourBuffer.get(i);
-		}
-
 	    vertexBuffer.rewind();
 	    colourBuffer.rewind();
 	    normalBuffer.rewind();
 	    textureBuffer.rewind();
 
-	    int[] bufferIDs = new int[4];
+	    //generate buffer IDs for each array
+	    bufferIDs = new int[4];
 	    gl.glGenBuffers(4, bufferIDs, 0);
 	    vertexID = bufferIDs[0];
 	    colourID = bufferIDs[1];
 	    normalID = bufferIDs[2];
 	    textureID = bufferIDs[3];
 
+	    //bind the buffer arrays to the VBO
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, vertexID);
 	    gl.glBufferData(GL2.GL_ARRAY_BUFFER, size*4, vertexBuffer, GL2.GL_STATIC_DRAW);
 	    gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, colourID);
@@ -161,7 +136,7 @@ public class Enemy {
 
 	/**
 	 * Draws a sphere using quad strip
-	 * Code sourced from "http://math.hws.edu/graphicsbook/source/jogl/ColorCubeOfSpheres.java"
+	 * Code Source: "http://math.hws.edu/graphicsbook/source/jogl/ColorCubeOfSpheres.java"
 	 * @param gl
 	 */
 	public void drawSphere(GL2 gl) {
@@ -174,6 +149,18 @@ public class Enemy {
 	    }
 	}
 
+	/**
+	 * draws the sphere object from buffers & uses shaderProgram 
+	 * material properties are interpolated based on Sun state
+	 * 
+	 * @param gl
+	 * @param shaderProgram
+	 * @param nightEnabled
+	 * @param torchCoordinates
+	 * @param sunCoordinates
+	 * @param avatarRotation
+	 * @param torchEnabled
+	 */
 	public void draw(GL2 gl, int shaderProgram, boolean nightEnabled, float[] torchCoordinates, float[] sunCoordinates, double avatarRotation, boolean torchEnabled, float sunT) {
 
 		if (!initialised) {
@@ -187,8 +174,8 @@ public class Enemy {
 		// Interpolate between ambient low and height
 
 		float ambientInterp = ambientH*((float) Math.sin(sunT*2*Math.PI)) + ambientL*(1-(float) Math.sin(sunT*2*Math.PI)) ;
-		System.out.println("ambientInterp: " + ambientInterp);
 
+		//set material properties
 		float[] ambient = {ambientInterp, ambientInterp, ambientInterp, 1.0f};
 		float[] diffuse = {ambientInterp*3, ambientInterp*3, ambientInterp*3, 1.0f};
 	    float[] specular = {0.2f, 0.2f, 0.2f, 1.0f};
@@ -199,6 +186,7 @@ public class Enemy {
 
 		gl.glPushMatrix();
 
+			//bind uniform variables and set pointers to each array
 			gl.glUseProgram(shaderProgram);
 			gl.glUniform1i(texUnitPos, 0);
 			gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
@@ -247,23 +235,11 @@ public class Enemy {
 		    	gl.glUniform3fv(lightPos, 1, torchCoordinates, 0);
 			    gl.glUniform1i(nightMode, 1);
 		    } else {
-		    	//System.out.println(terrain.getSunlight().length);
 		    	gl.glUniform3fv(lightPos, 1, sunCoordinates, 0);
 			    gl.glUniform1i(nightMode, 0);
 		    }
 
-//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, vertexID);
-//			gl.glEnableClientState(GL2.GL_VERTEX_ARRAY);
-//			gl.glVertexPointer(3, GL.GL_FLOAT, 0, 0);
-//
-//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, colourID);
-//			gl.glEnableClientState(GL2.GL_COLOR_ARRAY);
-//			gl.glColorPointer(3, GL.GL_FLOAT, 0, 0);
-//
-//			gl.glBindBuffer(GL.GL_ARRAY_BUFFER, textureID);
-//			gl.glEnableClientState(GL2.GL_TEXTURE_COORD_ARRAY);
-//			gl.glTexCoordPointer(2, GL.GL_FLOAT, 0, 0);
-
+		    //translate and then draw the sphere
 			gl.glTranslated(x, y, z);
 
 			gl.glPolygonMode(GL2.GL_FRONT_AND_BACK, GL2.GL_FILL);
@@ -272,6 +248,7 @@ public class Enemy {
 
 		gl.glPopMatrix();
 
+		//disable the VBO
 		gl.glBindBuffer(GL2.GL_ARRAY_BUFFER, 0);
 		gl.glDisableClientState(GL2.GL_VERTEX_ARRAY);
 		gl.glDisableClientState(GL2.GL_COLOR_ARRAY);

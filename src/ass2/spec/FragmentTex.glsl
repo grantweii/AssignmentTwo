@@ -21,7 +21,7 @@ void main (void) {
     vec3 r = normalize(-reflect(l, n));  
     
     if (nightMode) {
-
+	
 	    vec3 toLight;
         toLight.x = enemyPos.x-lightPosition.x;
         toLight.y = 0;

@@ -3,7 +3,6 @@ package ass2.spec;
 import javax.swing.JFrame;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.Random;
 
 import com.jogamp.opengl.GL;
@@ -28,7 +27,6 @@ public class Game extends JFrame implements GLEventListener{
     private Terrain myTerrain;
     private Lighting lighting;
     private Avatar avatar;
-    private ArrayList<Enemy> enemies;
     private Camera camera;
     private TexturePack texturePack;
     private PortalPair portal;
@@ -37,10 +35,7 @@ public class Game extends JFrame implements GLEventListener{
     Random rand;
 
     // Shader variables
-    private int PassthroughShader;
     private int TextureShader;
-    private static final String PASSTHROUGH_VERTEX_SHADER = "src/ass2/spec/PassThroughVertex.glsl";
-    private static final String PASSTHROUGH_FRAGMENT_SHADER = "src/ass2/spec/PassThroughFragment.glsl";
     private static final String VERTEX_TEX_SHADER = "src/ass2/spec/VertexTex.glsl";
     private static final String FRAGMENT_TEX_SHADER = "src/ass2/spec/FragmentTex.glsl";
 
@@ -118,9 +113,8 @@ public class Game extends JFrame implements GLEventListener{
         // Setup Sunlight
         lighting.draw(gl);
 
-        // TODO: Move this check to avatar
-        // If we are in third person than draw the avatar
-        if (avatar.getThirdPerson()) avatar.draw(gl);
+        //draw avatar
+        avatar.draw(gl);
 
         // TODO: Implement an avatar method which returns its coordinates
         // Draw enemies
@@ -164,7 +158,6 @@ public class Game extends JFrame implements GLEventListener{
 
         // Try to load shaders
         try {
-	   		PassthroughShader = Shader.initShaders(gl,PASSTHROUGH_VERTEX_SHADER,PASSTHROUGH_FRAGMENT_SHADER);
 	   		TextureShader = Shader.initShaders(gl, VERTEX_TEX_SHADER, FRAGMENT_TEX_SHADER);
         } catch (Exception e) {
 	            e.printStackTrace();

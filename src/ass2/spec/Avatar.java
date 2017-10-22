@@ -29,6 +29,10 @@ public class Avatar implements KeyListener {
 		spawnCoords();
 	}
 	
+	/**
+	 * avatar randomly spawns somewhere on map
+	 * 
+	 */
 	public void spawnCoords() {
 		Random rand = new Random();
 		x = rand.nextFloat() * (terrain.size().width - 1);
@@ -36,6 +40,11 @@ public class Avatar implements KeyListener {
 		y = (float) (terrain.altitude(x, z) + 0.15);
 	}
 	
+	/**
+	 * compares coordinates of portal with coordinates of avatar
+	 * 
+	 * @return
+	 */
 	public int enterPortal() {
 		float[] firstPortalCoords = portals.getFirstPortalCoords();
 		float[] firstPortalBounds = portals.getFirstPortalBounds();
@@ -54,8 +63,17 @@ public class Avatar implements KeyListener {
 		}
 	}
 	
+	/**
+	 * draws sphere & binds texture
+	 * 
+	 * @param gl
+	 */
 	public void draw(GL2 gl) {
 		
+		//draw avatar only if thirdperson is enabled
+		if (!thirdPerson) return;
+		
+		//initialise (first time only)
 		if (!initialised) {
 			init(gl);
 			initialised = true;
@@ -63,6 +81,7 @@ public class Avatar implements KeyListener {
 		
 		gl.glPushMatrix();
 
+			//bind texture, translate, rotate and finally draw
 	        gl.glBindTexture(GL2.GL_TEXTURE_2D, myTexture.getTextureId());
 	        gl.glTranslated(x, y, z);
 	        gl.glRotated(-myRotation, 0, 1, 0);
@@ -72,13 +91,12 @@ public class Avatar implements KeyListener {
 
 		gl.glPopMatrix();
 		
-				
-		System.out.println("x: " + x);
-		System.out.println("z: "  + z);
-		System.out.println(myRotation);
-
 	}
 	
+	/**
+	 * teleports avatar to alternate portal
+	 * 
+	 */
 	public void checkPortal() {
 		//enters 1st portal
 		if (enterPortal() == 1) {
@@ -105,7 +123,6 @@ public class Avatar implements KeyListener {
 			z = firstPortalCoords[2];
 			//Y is interpolated as always;
 			y = (float) terrain.altitude(x, z);
-			
 		}
 	}
 
@@ -176,10 +193,12 @@ public class Avatar implements KeyListener {
     	}
     }
 	
-	
-	
+	/**
+	 * initialises avatar texture and lighting coefficients
+	 * @param gl
+	 */
 	public void init(GL2 gl) {
-		//materials
+		//set material properties
 		float[] ambient = {0.2f, 0.2f, 0.2f, 1.0f};
         float[] diffuse = {0.3f, 0.1f, 0.0f, 1.0f};
         float[] specular = {0.5f, 0.5f, 0.5f, 1.0f};
@@ -188,14 +207,21 @@ public class Avatar implements KeyListener {
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_DIFFUSE, diffuse, 0);
         gl.glMaterialfv(GL2.GL_FRONT, GL2.GL_SPECULAR, specular, 0);
         
+        //initialise avatar texture
 		gl.glEnable(GL2.GL_TEXTURE_2D);
 		myTexture = new MyTexture(gl,"resources/textures/rock.jpg","jpg",true);
-//		gl.glTexEnvf(GL2.GL_TEXTURE_ENV, GL2.GL_TEXTURE_ENV_MODE, GL2.GL_REPLACE);
 	}
 	
+	/**
+	 * interpolates new position coordinates forwards
+	 * trig used to take into consideration avatar rotation
+	 */
 	public void moveForward() {
+		//new coordinates
 		float dx = (float) (Math.cos(Math.toRadians(myRotation)) * speed + x);
         float dz = (float) (Math.sin(Math.toRadians(myRotation)) * speed + z);
+        
+        //if new coordinates are still on map, update coordinates
         if (dx < (terrain.size().width - 1) && dz < (terrain.size().height - 1) && dx > 0 && dz > 0) {
 	        x = dx;
 	        z = dz;
@@ -203,9 +229,16 @@ public class Avatar implements KeyListener {
         }
 	}
 	
+	/**
+	 * interpolates new position coordinates backwards
+	 * trig used to take into consideration avatar rotation
+	 */
 	public void moveBackward() {
+		//new coordinates
 		float dx = (float) (x - Math.cos(Math.toRadians(myRotation)) * speed);
         float dz = (float) (z - Math.sin(Math.toRadians(myRotation)) * speed);
+        
+        //if new coordinates are still on map, update coordinates
         if (dx < (terrain.size().width - 1) && (dz < terrain.size().height - 1) && dx > 0 && dz > 0) {
 	        x = dx;
 	        z = dz;
@@ -213,11 +246,17 @@ public class Avatar implements KeyListener {
         }
 	}
 	
+	/**
+	 * turning right, add rotation
+	 */
 	public void turnRight() {
 		myRotation = myRotation + rotationStep;
     	if (myRotation > 360) myRotation = 0;
 	}
 	
+	/**
+	 * turning left, minus rotation
+	 */
 	public void turnLeft() {
 		myRotation = myRotation - rotationStep;
     	if (myRotation < 0) myRotation = 360;
@@ -275,11 +314,13 @@ public class Avatar implements KeyListener {
         	//UP, DOWN is translation
             case KeyEvent.VK_UP: {
                 moveForward();
+            	//check if avatar is entering portals only if portals are enabled
                 if (portals.getPortalState()) checkPortal();
                 break;
             }
             case KeyEvent.VK_DOWN: {
             	moveBackward();
+            	//check if avatar is entering portals only if portals are enabled
             	if (portals.getPortalState()) checkPortal();
             	break;
             }
