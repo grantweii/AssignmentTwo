@@ -135,7 +135,6 @@ public class Terrain {
         // since the point lies directly on a grid point
         // This avoids having denominators that are 0 later on
         if ((x == Math.floor(x)) && !Double.isInfinite(x) && (z == Math.floor(z)) && !Double.isInfinite(z)) {
-//            System.out.println(getGridAltitude((int) x, (int) z));
             return getGridAltitude((int) x, (int) z);
         }
 
@@ -206,7 +205,6 @@ public class Terrain {
     public void addEnemy(double x, double z) {
         float y = (float) altitude(x, z);
         Enemy enemy = new Enemy((float) x, y, (float) z);
-        System.out.println(x);
         myEnemies.add(enemy);
     }
 

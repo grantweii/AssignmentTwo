@@ -53,10 +53,8 @@ public class Avatar implements KeyListener {
 		float[] secondPortalBounds = portals.getSecondPortalBounds();
 		
 		if ((z < (firstPortalCoords[2] + 0.06) && (z > (firstPortalCoords[2] - 0.06))) && x > firstPortalBounds[0] && x < firstPortalBounds[1])  {
-			System.out.println("returned 1");
 			return 1;
 		} else if ((z < (secondPortalCoords[2] + 0.06) && (z > (secondPortalCoords[2] - 0.06))) && x > secondPortalBounds[0] && x < secondPortalBounds[1]) {
-			System.out.println("returned 2");
 			return 2;
 		} else {
 			return 0;
